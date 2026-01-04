@@ -142,10 +142,11 @@ async function createNotionTask(task) {
       };
     }
     
-    // Estado inicial
-    properties[FIELD_MAPPING.status] = {
-      status: { name: 'Not started' }
-    };
+    // Estado inicial - comentado porque depende de las opciones de tu DB
+    // Si quieres usar estado, descomenta y pon el nombre exacto de tu opción
+    // properties[FIELD_MAPPING.status] = {
+    //   status: { name: 'Por hacer' }
+    // };
     
     // Tipo de tarea
     if (task.taskType) {
