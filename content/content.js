@@ -35,14 +35,27 @@
   // Escuchar mensajes del background (menú contextual)
   function listenForContextMenu() {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      console.log('📋 Mensaje recibido:', message);
+      
       if (message.type === 'OPEN_TASK_SIDEBAR') {
-        console.log('📋 Abriendo sidebar desde menú contextual');
+        console.log('📋 Abriendo sidebar desde menú contextual con texto:', message.text);
+        
+        // Verificar que el sidebar existe
+        let sidebar = document.getElementById('wtn-sidebar');
+        let overlay = document.getElementById('wtn-overlay');
+        
+        if (!sidebar || !overlay) {
+          console.log('📋 Sidebar no existe, creándolo...');
+          createSidebar();
+          sidebar = document.getElementById('wtn-sidebar');
+          overlay = document.getElementById('wtn-overlay');
+        }
         
         // Obtener info adicional del mensaje seleccionado
         const selection = window.getSelection();
         let messageInfo = { sender: '', time: '' };
         
-        if (selection.rangeCount > 0) {
+        if (selection && selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
           const container = range.commonAncestorContainer;
           const messageEl = container.nodeType === 1 
@@ -57,13 +70,16 @@
         
         selectedMessage = {
           text: message.text,
-          sender: messageInfo.sender,
-          time: messageInfo.time,
+          sender: messageInfo.sender || 'WhatsApp',
+          time: messageInfo.time || new Date().toLocaleTimeString(),
           element: null
         };
         
+        // Forzar apertura del sidebar
+        sidebarOpen = false; // Reset estado
         openSidebar(selectedMessage);
-        sendResponse({ received: true });
+        
+        sendResponse({ received: true, sidebarOpened: true });
       }
       return true;
     });
@@ -418,11 +434,24 @@
 
   // Abrir sidebar
   function openSidebar(message) {
-    if (sidebarOpen) return;
+    console.log('📋 openSidebar llamado con:', message);
+    
+    if (sidebarOpen) {
+      console.log('📋 Sidebar ya está abierto');
+      return;
+    }
     sidebarOpen = true;
 
     const overlay = document.getElementById('wtn-overlay');
     const sidebar = document.getElementById('wtn-sidebar');
+    
+    console.log('📋 Elementos encontrados - overlay:', !!overlay, 'sidebar:', !!sidebar);
+    
+    if (!sidebar || !overlay) {
+      console.error('📋 ERROR: No se encontró el sidebar o overlay');
+      sidebarOpen = false;
+      return;
+    }
     
     // Mostrar preview del mensaje
     const preview = document.getElementById('wtn-message-preview');
@@ -446,8 +475,10 @@
     }
 
     // Mostrar
-    overlay?.classList.add('active');
-    sidebar?.classList.add('active');
+    overlay.classList.add('active');
+    sidebar.classList.add('active');
+    
+    console.log('📋 Sidebar abierto correctamente');
     
     // Focus en título
     setTimeout(() => titleInput?.focus(), 300);
