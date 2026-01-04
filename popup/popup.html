@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Task Creator</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="logo">
+        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM17.99 9l-1.41-1.42-6.59 6.59-2.58-2.57-1.42 1.41 4 3.99z"/>
+        </svg>
+        <span class="logo-text">Task Creator</span>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="popup-content">
+      <div class="status-card">
+        <div class="status-icon">✅</div>
+        <div class="status-info">
+          <span class="status-label">Extensión activa</span>
+          <span class="status-text">Lista para capturar mensajes</span>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h3 class="instructions-title">Cómo usar</h3>
+        <ol class="instructions-list">
+          <li>Abre <strong>WhatsApp Web</strong></li>
+          <li>Pasa el mouse sobre cualquier mensaje</li>
+          <li>Haz clic en el botón <span class="badge">☑️</span> que aparece</li>
+          <li>Completa los detalles de la tarea</li>
+          <li>¡Listo! Tu tarea quedará guardada</li>
+        </ol>
+      </div>
+
+      <div class="stats-card">
+        <div class="stat">
+          <span class="stat-value" id="task-count">0</span>
+          <span class="stat-label">Tareas creadas</span>
+        </div>
+      </div>
+
+      <button id="btn-view-tasks" class="btn btn-secondary">
+        📋 Ver todas las tareas
+      </button>
+    </main>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <span class="version">v1.0.0</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
