@@ -11,7 +11,6 @@
   },
   "permissions": [
     "storage",
-    "identity",
     "activeTab"
   ],
   "host_permissions": [
@@ -44,10 +43,6 @@
       "resources": ["sidebar/sidebar.html", "icons/*"],
       "matches": ["https://web.whatsapp.com/*"]
     }
-  ],
-  "oauth2": {
-    "client_id": "YOUR_NOTION_CLIENT_ID",
-    "scopes": []
-  }
+  ]
 }
 

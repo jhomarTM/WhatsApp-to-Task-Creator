@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnConnect: document.getElementById('btn-connect'),
     btnDisconnect: document.getElementById('btn-disconnect'),
     btnRetry: document.getElementById('btn-retry'),
+    tokenInput: document.getElementById('notion-token-input'),
     workspaceIcon: document.getElementById('workspace-icon'),
     workspaceName: document.getElementById('workspace-name'),
     dbCount: document.getElementById('db-count'),
@@ -49,12 +50,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function showConnectedState(authData) {
     showState('connected');
     
-    // Actualizar UI con datos del workspace
-    if (authData.workspace) {
-      elements.workspaceName.textContent = authData.workspace.name || 'Mi Workspace';
-      if (authData.workspace.icon) {
-        elements.workspaceIcon.textContent = authData.workspace.icon;
-      }
+    // Actualizar UI con datos del bot
+    if (authData.botName) {
+      elements.workspaceName.textContent = authData.botName;
     }
 
     // Cargar bases de datos
@@ -65,6 +63,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (error) {
       console.error('Error cargando DBs:', error);
+      // Si hay error, puede ser que no haya bases compartidas
+      elements.dbCount.textContent = '0';
     }
   }
 
@@ -74,15 +74,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     showState('error');
   }
 
-  // Conectar con Notion
+  // Conectar con Notion usando Internal Integration Token
   async function connectToNotion() {
+    const token = elements.tokenInput?.value?.trim();
+    
+    if (!token) {
+      showError('Por favor ingresa tu Internal Integration Token');
+      elements.tokenInput?.focus();
+      return;
+    }
+
+    if (!token.startsWith('secret_')) {
+      showError('El token debe comenzar con "secret_"');
+      elements.tokenInput?.focus();
+      return;
+    }
+
     elements.btnConnect.disabled = true;
     elements.btnConnect.classList.add('btn-loading');
+    elements.tokenInput.disabled = true;
 
     try {
-      const response = await chrome.runtime.sendMessage({ type: 'NOTION_AUTH' });
+      const response = await chrome.runtime.sendMessage({ 
+        type: 'SET_NOTION_TOKEN',
+        token: token
+      });
       
       if (response.success) {
+        // Limpiar input
+        elements.tokenInput.value = '';
         // Notificar al content script
         notifyContentScript(true);
         await checkAuth();
@@ -90,11 +110,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         throw new Error(response.error || 'Error al conectar');
       }
     } catch (error) {
-      console.error('Error en OAuth:', error);
+      console.error('Error configurando token:', error);
       showError(error.message);
     } finally {
       elements.btnConnect.disabled = false;
       elements.btnConnect.classList.remove('btn-loading');
+      elements.tokenInput.disabled = false;
     }
   }
 

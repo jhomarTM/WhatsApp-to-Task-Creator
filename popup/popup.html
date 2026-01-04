@@ -34,7 +34,30 @@
           </svg>
         </div>
         <h2 class="state-title">Conecta con Notion</h2>
-        <p class="state-description">Vincula tu cuenta de Notion para empezar a crear tareas desde WhatsApp.</p>
+        <p class="state-description">Ingresa tu Internal Integration Token de Notion para empezar a crear tareas.</p>
+        
+        <div class="token-form">
+          <label for="notion-token-input" class="token-label">
+            Internal Integration Token
+            <a href="https://www.notion.so/my-integrations" target="_blank" class="help-link" title="Crear integración">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+              </svg>
+            </a>
+          </label>
+          <input 
+            type="password" 
+            id="notion-token-input" 
+            class="token-input" 
+            placeholder="secret_xxx..."
+            autocomplete="off"
+          />
+          <p class="token-hint">
+            Obtén tu token en 
+            <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a>
+          </p>
+        </div>
+        
         <button id="btn-connect" class="btn btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 2.16c-.42-.326-.98-.7-2.055-.607L3.01 2.7c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.84-.046.933-.56.933-1.167V6.354c0-.606-.233-.933-.746-.886l-15.177.886c-.56.047-.747.327-.747.934z"/>
@@ -46,10 +69,10 @@
       <!-- Estado: Conectado -->
       <div id="state-connected" class="state">
         <div class="connection-info">
-          <div class="workspace-icon" id="workspace-icon">📋</div>
+          <div class="workspace-icon" id="workspace-icon">🤖</div>
           <div class="workspace-details">
-            <span class="workspace-label">Conectado a</span>
-            <span class="workspace-name" id="workspace-name">Mi Workspace</span>
+            <span class="workspace-label">Bot conectado</span>
+            <span class="workspace-name" id="workspace-name">Notion Integration</span>
           </div>
           <div class="status-badge">
             <span class="status-dot"></span>

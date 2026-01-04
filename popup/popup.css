@@ -145,6 +145,79 @@ body {
   max-width: 260px;
 }
 
+/* Token Form */
+.token-form {
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.token-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.help-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.help-link:hover {
+  color: var(--primary);
+}
+
+.help-link svg {
+  fill: currentColor;
+}
+
+.token-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  transition: all 150ms ease;
+}
+
+.token-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-card);
+}
+
+.token-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.token-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.token-hint a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.token-hint a:hover {
+  text-decoration: underline;
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;

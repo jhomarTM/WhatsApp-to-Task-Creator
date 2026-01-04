@@ -27,6 +27,7 @@ class NotionAPI {
 
   /**
    * Realizar petición a la API
+   * Maneja errores HTTP comunes (401, 403, 404) según documentación oficial
    */
   async request(endpoint, options = {}) {
     const url = `${NOTION_API_BASE}${endpoint}`;
@@ -39,13 +40,53 @@ class NotionAPI {
       }
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new NotionAPIError(data.message || 'API Error', data.code, response.status);
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch (e) {
+      errorData = { message: `HTTP ${response.status}` };
     }
 
-    return data;
+    if (!response.ok) {
+      // Manejo específico de errores según documentación oficial
+      if (response.status === 401) {
+        throw new NotionAPIError(
+          'Token inválido o expirado. Verifica tu Internal Integration Token.',
+          'unauthorized',
+          response.status
+        );
+      }
+      if (response.status === 403) {
+        throw new NotionAPIError(
+          'Sin permisos. Asegúrate de compartir la base de datos con la integración.',
+          'forbidden',
+          response.status
+        );
+      }
+      if (response.status === 404) {
+        throw new NotionAPIError(
+          'Recurso no encontrado. Verifica el ID proporcionado.',
+          'not_found',
+          response.status
+        );
+      }
+      if (response.status === 400) {
+        throw new NotionAPIError(
+          errorData.message || 'Error de validación en la solicitud',
+          errorData.code || 'invalid_request',
+          response.status
+        );
+      }
+      
+      // Otros errores
+      throw new NotionAPIError(
+        errorData.message || 'Error en la API de Notion',
+        errorData.code || 'api_error',
+        response.status
+      );
+    }
+
+    return errorData; // En caso de éxito, errorData contiene los datos
   }
 
   /**
@@ -150,6 +191,32 @@ class NotionAPI {
     return this.request(`/pages/${pageId}`, {
       method: 'PATCH',
       body: JSON.stringify({ properties })
+    });
+  }
+
+  /**
+   * Agregar contenido adicional a una página existente
+   * PATCH /v1/blocks/{block_id}/children
+   * 
+   * Útil para agregar texto largo después de crear la página inicial
+   * 
+   * @param {string} pageId - ID de la página (block)
+   * @param {Array} blocks - Array de bloques a agregar
+   * @returns {Promise} Respuesta de la API con los bloques creados
+   */
+  async addContentToPage(pageId, blocks) {
+    if (!pageId) {
+      throw new Error('pageId es requerido');
+    }
+    if (!blocks || !Array.isArray(blocks) || blocks.length === 0) {
+      throw new Error('blocks debe ser un array no vacío');
+    }
+
+    return this.request(`/blocks/${pageId}/children`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        children: blocks
+      })
     });
   }
 

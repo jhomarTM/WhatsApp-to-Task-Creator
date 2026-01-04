@@ -1,117 +1,375 @@
 # 🔧 Guía de Configuración - WhatsApp Task to Notion
 
-## Paso 1: Crear una Integración en Notion
+## Arquitectura de la Integración
 
-1. Ve a [Notion Developers](https://www.notion.so/my-integrations)
+Esta extensión usa **Internal Integration** de Notion (NO OAuth), que es el método recomendado para integraciones privadas/de uso interno.
+
+### Características principales:
+
+- ✅ **Internal Integration Token**: Autenticación simple con token `secret_xxx`
+- ✅ **Compatible con cuenta Notion Free**: No requiere plan de pago
+- ✅ **Privada**: Solo funciona con tu workspace
+- ✅ **Segura**: Token almacenado localmente en Chrome
+- ✅ **Sin OAuth**: No requiere client_id, client_secret ni redirect_uri
+
+### Cómo funciona Notion API (2024-2025):
+
+1. **El bot solo ve lo que compartes**: No tiene acceso global al workspace
+2. **Debes compartir explícitamente**: Cada base de datos debe ser compartida con la integración
+3. **Token permanente**: El Internal Integration Token no expira (a menos que lo revoques)
+4. **Sin acceso a usuarios**: Con Internal Integration no puedes obtener lista de usuarios del workspace
+
+---
+
+## Paso 1: Crear Internal Integration en Notion
+
+1. Ve a [Notion Integrations](https://www.notion.so/my-integrations)
 2. Haz clic en **"+ New integration"**
 3. Completa los campos:
-   - **Name:** WhatsApp Task Creator
-   - **Associated workspace:** Selecciona tu workspace
-   - **Type:** Public integration (para OAuth)
+   - **Name**: `WhatsApp Task Creator` (o el nombre que prefieras)
+   - **Associated workspace**: Selecciona tu workspace
+   - **Type**: **Internal** (NO Public)
 4. Haz clic en **"Submit"**
 
-## Paso 2: Configurar OAuth
+### ⚠️ IMPORTANTE: Tipo Internal vs Public
 
-1. En la página de tu integración, ve a la pestaña **"Distribution"**
-2. Activa **"Public integration"**
-3. Completa la información requerida:
-   - **Company name:** Tu nombre o empresa
-   - **Website:** Cualquier URL válida
-   - **Tagline:** "Crear tareas desde WhatsApp"
-   - **Privacy policy:** Puedes usar cualquier URL
-   - **Terms of use:** Puedes usar cualquier URL
-4. En **"OAuth Redirect URIs"**, agrega:
-   ```
-   https://YOUR_EXTENSION_ID.chromiumapp.org/
-   ```
-   (El ID lo obtendrás después de cargar la extensión)
+- **Internal**: Para uso personal/privado. NO requiere OAuth. Usa token `secret_xxx`
+- **Public**: Para integraciones públicas multi-usuario. Requiere OAuth y configuración adicional
 
-## Paso 3: Cargar la Extensión en Chrome
+**Esta extensión usa Internal Integration.**
+
+---
+
+## Paso 2: Obtener el Internal Integration Token
+
+1. En la página de tu integración recién creada
+2. Ve a la pestaña **"Secrets"**
+3. Copia el **"Internal Integration Token"**
+   - Formato: `secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+   - ⚠️ **Mantén este token seguro**. No lo compartas públicamente.
+
+---
+
+## Paso 3: Compartir Bases de Datos con la Integración
+
+**CRÍTICO**: El bot solo puede acceder a bases de datos que compartas explícitamente.
+
+### Para cada base de datos que quieras usar:
+
+1. Abre la base de datos en Notion
+2. Haz clic en **"..."** (menú) en la esquina superior derecha
+3. Selecciona **"Connections"** o **"Add connections"**
+4. Busca tu integración (`WhatsApp Task Creator`)
+5. Haz clic para conectarla
+6. ✅ La base de datos ahora es accesible para la integración
+
+### Verificar acceso:
+
+- Si la base de datos está compartida, aparecerá en la lista cuando uses la extensión
+- Si no aparece, verifica que la hayas compartido correctamente
+
+---
+
+## Paso 4: Cargar la Extensión en Chrome
 
 1. Abre Chrome y ve a: `chrome://extensions/`
 2. Activa el **"Modo desarrollador"** (esquina superior derecha)
 3. Haz clic en **"Cargar descomprimida"**
 4. Selecciona la carpeta del proyecto
-5. **Copia el ID de la extensión** que aparece debajo del nombre
-
-## Paso 4: Actualizar Configuración
-
-### En Notion:
-1. Vuelve a [tu integración](https://www.notion.so/my-integrations)
-2. Actualiza el **Redirect URI** con tu Extension ID:
-   ```
-   https://abcdefghijklmnopqrstuvwxyz123456.chromiumapp.org/
-   ```
-
-### En el código:
-1. Abre `background/background.js`
-2. Actualiza la configuración:
-
-```javascript
-const NOTION_CONFIG = {
-  clientId: 'TU_CLIENT_ID_DE_NOTION',
-  clientSecret: 'TU_CLIENT_SECRET_DE_NOTION',
-  // ...
-};
-```
-
-3. Abre `manifest.json`
-4. Actualiza el `client_id` en la sección `oauth2`:
-
-```json
-"oauth2": {
-  "client_id": "TU_CLIENT_ID_DE_NOTION",
-  "scopes": []
-}
-```
-
-## Paso 5: Recargar la Extensión
-
-1. Ve a `chrome://extensions/`
-2. Haz clic en el ícono de recarga de tu extensión
-3. ¡Listo!
-
-## Paso 6: Probar
-
-1. Abre [WhatsApp Web](https://web.whatsapp.com)
-2. Haz clic en el ícono de la extensión en la barra de herramientas
-3. Conecta tu cuenta de Notion
-4. Escribe un mensaje y haz clic en el botón ☑️ para crear una tarea
+5. ✅ La extensión debería aparecer en tu lista
 
 ---
 
-## 🔑 Obtener Credenciales de Notion
+## Paso 5: Configurar el Token en la Extensión
 
-### Client ID
-1. En tu integración de Notion
-2. Pestaña **"Configuration"**
-3. Sección **"OAuth Client ID"**
+1. Haz clic en el ícono de la extensión en la barra de herramientas de Chrome
+2. En el popup, verás un campo para ingresar el **Internal Integration Token**
+3. Pega el token que copiaste en el Paso 2
+4. Haz clic en **"Conectar con Notion"**
+5. Si el token es válido, verás el estado "Conectado"
 
-### Client Secret
-1. En tu integración de Notion
-2. Pestaña **"Secrets"**
-3. **"Internal Integration Secret"** (para testing)
-4. O genera un **"OAuth client secret"** para producción
+### Verificar conexión:
+
+- El popup mostrará "Bot conectado" y el número de bases de datos accesibles
+- Si hay error, revisa el mensaje y verifica el token
+
+---
+
+## Paso 6: Probar la Extensión
+
+1. Abre [WhatsApp Web](https://web.whatsapp.com)
+2. Deberías ver un botón ☑️ junto al campo de mensaje
+3. Haz clic en el botón
+4. Completa el formulario:
+   - **Título**: Requerido
+   - **Descripción**: Opcional (se agrega como contenido de la página)
+   - **Fecha límite**: Opcional (si tu DB tiene propiedad date)
+   - **Prioridad**: Opcional (si tu DB tiene propiedad select/status)
+   - **Base de datos**: Selecciona una de las disponibles
+5. Haz clic en **"Crear tarea"**
+6. ✅ La tarea debería aparecer en Notion
+
+---
+
+## 📚 Variables de Configuración
+
+### Variables necesarias:
+
+- **NOTION_TOKEN**: Internal Integration Token (`secret_xxx...`)
+  - Se almacena en `chrome.storage.local`
+  - No se requiere configuración en código
+
+### Variables opcionales:
+
+- **DATABASE_ID**: ID de la última base de datos usada
+  - Se guarda automáticamente para uso futuro
+  - Se almacena en `chrome.storage.local`
+
+---
+
+## 🔍 Ejemplos de Requests HTTP
+
+### 1. Verificar conectividad
+
+```http
+GET /v1/users/me HTTP/1.1
+Host: api.notion.com
+Authorization: Bearer secret_xxx...
+Notion-Version: 2022-06-28
+```
+
+**Respuesta exitosa:**
+```json
+{
+  "object": "user",
+  "id": "bot_id",
+  "name": "WhatsApp Task Creator",
+  "type": "bot"
+}
+```
+
+### 2. Buscar bases de datos
+
+```http
+POST /v1/search HTTP/1.1
+Host: api.notion.com
+Authorization: Bearer secret_xxx...
+Notion-Version: 2022-06-28
+Content-Type: application/json
+
+{
+  "filter": {
+    "property": "object",
+    "value": "database"
+  },
+  "sort": {
+    "direction": "descending",
+    "timestamp": "last_edited_time"
+  }
+}
+```
+
+### 3. Obtener esquema de base de datos
+
+```http
+GET /v1/databases/{database_id} HTTP/1.1
+Host: api.notion.com
+Authorization: Bearer secret_xxx...
+Notion-Version: 2022-06-28
+```
+
+### 4. Crear página en base de datos
+
+```http
+POST /v1/pages HTTP/1.1
+Host: api.notion.com
+Authorization: Bearer secret_xxx...
+Notion-Version: 2022-06-28
+Content-Type: application/json
+
+{
+  "parent": {
+    "database_id": "database_id"
+  },
+  "properties": {
+    "Name": {
+      "title": [
+        {
+          "text": {
+            "content": "Mi tarea"
+          }
+        }
+      ]
+    },
+    "Date": {
+      "date": {
+        "start": "2024-12-31"
+      }
+    },
+    "Priority": {
+      "select": {
+        "name": "Alta"
+      }
+    }
+  },
+  "children": [
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {
+            "text": {
+              "content": "Descripción de la tarea"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### 5. Agregar contenido a página existente
+
+```http
+PATCH /v1/blocks/{page_id}/children HTTP/1.1
+Host: api.notion.com
+Authorization: Bearer secret_xxx...
+Notion-Version: 2022-06-28
+Content-Type: application/json
+
+{
+  "children": [
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {
+            "text": {
+              "content": "Texto adicional"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+---
+
+## ⚠️ Límites de Cuenta Notion Free
+
+### Límites de API:
+
+- ✅ **Sin límite de requests**: La API funciona igual en plan Free
+- ✅ **Sin límite de páginas**: Puedes crear todas las páginas que quieras
+- ⚠️ **Rate limiting**: ~3 requests por segundo (suficiente para uso normal)
+- ⚠️ **Sin acceso a usuarios**: Con Internal Integration no puedes obtener lista de usuarios
+
+### Límites de la extensión:
+
+- ✅ Compatible con cuenta Free
+- ✅ Sin restricciones adicionales
+- ⚠️ Solo puedes usar bases de datos que compartas manualmente
 
 ---
 
 ## ❓ Troubleshooting
 
-### Error: "redirect_uri mismatch"
-- Verifica que el Redirect URI en Notion coincida exactamente con:
-  `https://TU_EXTENSION_ID.chromiumapp.org/`
-- No olvides la barra final `/`
+### Error: "Token inválido"
 
-### Error: "Invalid client_id"
-- Verifica que el Client ID esté correctamente copiado
-- Asegúrate de que la integración sea pública
+- Verifica que el token comience con `secret_`
+- Asegúrate de haber copiado el token completo
+- Verifica que no haya espacios al inicio/final
+- El token debe ser de tipo **Internal Integration**, no OAuth
 
-### El botón no aparece en WhatsApp
+### Error: "Sin permisos" o "Sin acceso a esta base de datos"
+
+- **Solución**: Comparte la base de datos con la integración
+  1. Abre la base de datos en Notion
+  2. Menú "..." → "Connections"
+  3. Conecta tu integración
+
+### Error: "No se encontraron bases de datos"
+
+- Verifica que hayas compartido al menos una base de datos con la integración
+- Las bases de datos deben estar compartidas explícitamente
+- El bot NO tiene acceso global al workspace
+
+### El botón no aparece en WhatsApp Web
+
 - Recarga la página de WhatsApp Web
-- Verifica que la extensión esté activada
-- Revisa la consola del navegador (F12) por errores
+- Verifica que la extensión esté activada en `chrome://extensions/`
+- Abre DevTools (F12) y revisa la consola por errores
+- Verifica que estés en `web.whatsapp.com` (no en la app móvil)
 
-### Error al crear tarea
-- Asegúrate de que la integración tenga acceso a la base de datos
-- En Notion, abre la base de datos → ... → Connections → Añade tu integración
+### Error al crear tarea: "Error de validación"
 
+- Verifica que la base de datos tenga una propiedad de tipo **"title"**
+- Asegúrate de que los valores de select/status existan en el schema
+- Verifica que las fechas estén en formato ISO (YYYY-MM-DD)
+
+### Error 401: Unauthorized
+
+- El token puede haber sido revocado
+- Ve a [my-integrations](https://www.notion.so/my-integrations) y verifica el token
+- Genera un nuevo token si es necesario
+
+### Error 403: Forbidden
+
+- La base de datos no está compartida con la integración
+- Comparte la base de datos siguiendo el Paso 3
+
+### Error 404: Not Found
+
+- Verifica que el ID de la base de datos sea correcto
+- Asegúrate de que la base de datos exista y esté compartida
+
+---
+
+## 🔒 Seguridad
+
+### Buenas prácticas:
+
+- ✅ **Nunca compartas tu token públicamente**
+- ✅ El token se almacena localmente en Chrome (encriptado)
+- ✅ Solo se envía a `api.notion.com`
+- ✅ No hay servidor intermediario
+
+### Revocar acceso:
+
+Si necesitas revocar el acceso:
+
+1. Ve a [my-integrations](https://www.notion.so/my-integrations)
+2. Selecciona tu integración
+3. Haz clic en **"Delete"** o **"Revoke token"**
+4. En la extensión, haz clic en **"Desconectar cuenta"**
+
+---
+
+## 📖 Referencias
+
+- [Notion API Getting Started](https://developers.notion.com/docs/getting-started)
+- [Notion API Reference](https://developers.notion.com/reference/intro)
+- [Notion Authorization Guide](https://developers.notion.com/docs/authorization)
+- [Internal Integrations](https://developers.notion.com/docs/authorization#internal-integrations)
+
+---
+
+## 🎯 Resumen Rápido
+
+1. ✅ Crear Internal Integration en Notion
+2. ✅ Copiar el token `secret_xxx...`
+3. ✅ Compartir bases de datos con la integración
+4. ✅ Cargar extensión en Chrome
+5. ✅ Ingresar token en el popup
+6. ✅ ¡Listo para usar!
+
+---
+
+<p align="center">
+  <strong>Hecho con ❤️ para productividad</strong>
+</p>

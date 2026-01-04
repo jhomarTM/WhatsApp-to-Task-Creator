@@ -1,16 +1,18 @@
 /**
  * Background Service Worker
- * Maneja OAuth con Notion y comunicación con la API
+ * Maneja Internal Integration Token con Notion y comunicación con la API
+ * 
+ * Arquitectura:
+ * - Usa Internal Integration Token (NO OAuth)
+ * - Token se almacena localmente en chrome.storage
+ * - Todas las requests incluyen header Notion-Version: 2022-06-28
+ * - El bot solo ve páginas/databases compartidas explícitamente
  */
 
-// Configuración de Notion OAuth
+// Configuración de Notion API
 const NOTION_CONFIG = {
-  clientId: 'YOUR_NOTION_CLIENT_ID',
-  clientSecret: 'YOUR_NOTION_CLIENT_SECRET',
-  redirectUri: 'https://YOUR_EXTENSION_ID.chromiumapp.org/',
-  authUrl: 'https://api.notion.com/v1/oauth/authorize',
-  tokenUrl: 'https://api.notion.com/v1/oauth/token',
-  apiBase: 'https://api.notion.com/v1'
+  apiBase: 'https://api.notion.com/v1',
+  apiVersion: '2022-06-28'
 };
 
 // Estado de la extensión
@@ -25,7 +27,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 // Cargar token almacenado
 async function loadStoredToken() {
   try {
-    const result = await chrome.storage.local.get(['notionToken', 'notionWorkspace']);
+    const result = await chrome.storage.local.get(['notionToken']);
     if (result.notionToken) {
       notionToken = result.notionToken;
       console.log('Token de Notion cargado');
@@ -45,8 +47,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 async function handleMessage(message, sender) {
   switch (message.type) {
-    case 'NOTION_AUTH':
-      return await initiateOAuth();
+    case 'SET_NOTION_TOKEN':
+      return await setNotionToken(message.token);
     
     case 'CHECK_AUTH':
       return await checkAuthStatus();
@@ -63,6 +65,9 @@ async function handleMessage(message, sender) {
     case 'CREATE_TASK':
       return await createTask(message.task);
     
+    case 'ADD_CONTENT_TO_PAGE':
+      return await addContentToPage(message.pageId, message.blocks);
+    
     case 'GET_USERS':
       return await getWorkspaceUsers();
     
@@ -71,80 +76,47 @@ async function handleMessage(message, sender) {
   }
 }
 
-// Iniciar OAuth con Notion
-async function initiateOAuth() {
+/**
+ * Establecer Internal Integration Token
+ * El token debe obtenerse de: https://www.notion.so/my-integrations
+ * Formato: secret_xxx...
+ */
+async function setNotionToken(token) {
   try {
-    const state = generateRandomState();
-    const authUrl = `${NOTION_CONFIG.authUrl}?` + new URLSearchParams({
-      client_id: NOTION_CONFIG.clientId,
-      redirect_uri: chrome.identity.getRedirectURL(),
-      response_type: 'code',
-      owner: 'user',
-      state: state
-    }).toString();
-
-    const redirectUrl = await chrome.identity.launchWebAuthFlow({
-      url: authUrl,
-      interactive: true
-    });
-
-    // Extraer código de autorización
-    const url = new URL(redirectUrl);
-    const code = url.searchParams.get('code');
-    const returnedState = url.searchParams.get('state');
-
-    if (returnedState !== state) {
-      throw new Error('Estado de OAuth no coincide');
+    if (!token || typeof token !== 'string' || !token.startsWith('secret_')) {
+      throw new Error('Token inválido. Debe comenzar con "secret_"');
     }
 
-    if (!code) {
-      throw new Error('No se recibió código de autorización');
-    }
-
-    // Intercambiar código por token
-    const tokenResponse = await fetch(NOTION_CONFIG.tokenUrl, {
-      method: 'POST',
+    // Verificar que el token es válido haciendo una request mínima
+    const testResponse = await fetch(`${NOTION_CONFIG.apiBase}/users/me`, {
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + btoa(`${NOTION_CONFIG.clientId}:${NOTION_CONFIG.clientSecret}`)
-      },
-      body: JSON.stringify({
-        grant_type: 'authorization_code',
-        code: code,
-        redirect_uri: chrome.identity.getRedirectURL()
-      })
-    });
-
-    if (!tokenResponse.ok) {
-      const error = await tokenResponse.json();
-      throw new Error(error.error || 'Error obteniendo token');
-    }
-
-    const tokenData = await tokenResponse.json();
-    
-    // Guardar token y workspace
-    notionToken = tokenData.access_token;
-    await chrome.storage.local.set({
-      notionToken: tokenData.access_token,
-      notionWorkspace: {
-        id: tokenData.workspace_id,
-        name: tokenData.workspace_name,
-        icon: tokenData.workspace_icon
-      },
-      notionUser: {
-        id: tokenData.owner?.user?.id,
-        name: tokenData.owner?.user?.name,
-        avatar: tokenData.owner?.user?.avatar_url
+        'Authorization': `Bearer ${token}`,
+        'Notion-Version': NOTION_CONFIG.apiVersion
       }
     });
 
+    if (!testResponse.ok) {
+      const errorData = await testResponse.json().catch(() => ({}));
+      if (testResponse.status === 401) {
+        throw new Error('Token inválido o expirado');
+      }
+      if (testResponse.status === 403) {
+        throw new Error('Token sin permisos suficientes');
+      }
+      throw new Error(errorData.message || `Error verificando token: ${testResponse.status}`);
+    }
+
+    // Token válido, guardarlo
+    notionToken = token;
+    await chrome.storage.local.set({ notionToken: token });
+
     return {
       success: true,
-      workspace: tokenData.workspace_name
+      message: 'Token configurado correctamente'
     };
 
   } catch (error) {
-    console.error('Error en OAuth:', error);
+    console.error('Error configurando token:', error);
     return {
       success: false,
       error: error.message
@@ -152,10 +124,13 @@ async function initiateOAuth() {
   }
 }
 
-// Verificar estado de autenticación
+/**
+ * Verificar estado de autenticación
+ * Hace una request mínima a /users/me para validar el token
+ */
 async function checkAuthStatus() {
   try {
-    const result = await chrome.storage.local.get(['notionToken', 'notionWorkspace', 'notionUser']);
+    const result = await chrome.storage.local.get(['notionToken']);
     
     if (!result.notionToken) {
       return { authenticated: false };
@@ -165,20 +140,32 @@ async function checkAuthStatus() {
     const response = await fetch(`${NOTION_CONFIG.apiBase}/users/me`, {
       headers: {
         'Authorization': `Bearer ${result.notionToken}`,
-        'Notion-Version': '2022-06-28'
+        'Notion-Version': NOTION_CONFIG.apiVersion
       }
     });
 
     if (!response.ok) {
-      // Token inválido, limpiar storage
-      await chrome.storage.local.remove(['notionToken', 'notionWorkspace', 'notionUser']);
-      return { authenticated: false };
+      const errorData = await response.json().catch(() => ({}));
+      
+      // Token inválido o sin permisos, limpiar storage
+      if (response.status === 401 || response.status === 403) {
+        await chrome.storage.local.remove(['notionToken', 'lastDatabase']);
+        notionToken = null;
+        return { 
+          authenticated: false, 
+          error: response.status === 401 ? 'Token inválido' : 'Token sin permisos'
+        };
+      }
+      
+      throw new Error(errorData.message || `Error verificando token: ${response.status}`);
     }
+
+    const userData = await response.json();
 
     return {
       authenticated: true,
-      workspace: result.notionWorkspace,
-      user: result.notionUser
+      botId: userData.id,
+      botName: userData.name || 'Notion Bot'
     };
 
   } catch (error) {
@@ -187,10 +174,13 @@ async function checkAuthStatus() {
   }
 }
 
-// Desconectar de Notion
+/**
+ * Desconectar de Notion
+ * Elimina el token almacenado
+ */
 async function disconnectNotion() {
   try {
-    await chrome.storage.local.remove(['notionToken', 'notionWorkspace', 'notionUser', 'lastDatabase']);
+    await chrome.storage.local.remove(['notionToken', 'lastDatabase']);
     notionToken = null;
     return { success: true };
   } catch (error) {
@@ -198,11 +188,15 @@ async function disconnectNotion() {
   }
 }
 
-// Obtener bases de datos del workspace
+/**
+ * Buscar bases de datos accesibles
+ * Usa POST /v1/search con filter para obtener solo databases
+ * IMPORTANTE: Solo retorna databases que fueron compartidas con la integración
+ */
 async function getDatabases() {
   const token = await getToken();
   if (!token) {
-    throw new Error('No autenticado');
+    throw new Error('No autenticado. Configura tu Internal Integration Token.');
   }
 
   try {
@@ -210,7 +204,7 @@ async function getDatabases() {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Notion-Version': '2022-06-28',
+        'Notion-Version': NOTION_CONFIG.apiVersion,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -226,8 +220,19 @@ async function getDatabases() {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error obteniendo bases de datos');
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (response.status === 401) {
+        throw new Error('Token inválido. Verifica tu Internal Integration Token.');
+      }
+      if (response.status === 403) {
+        throw new Error('Token sin permisos. Asegúrate de compartir las bases de datos con la integración.');
+      }
+      if (response.status === 404) {
+        throw new Error('Endpoint no encontrado. Verifica la versión de la API.');
+      }
+      
+      throw new Error(errorData.message || `Error obteniendo bases de datos: ${response.status}`);
     }
 
     const data = await response.json();
@@ -235,8 +240,8 @@ async function getDatabases() {
     // Formatear respuesta
     const databases = data.results.map(db => ({
       id: db.id,
-      title: db.title?.[0]?.plain_text || 'Sin título',
-      icon: db.icon?.emoji || db.icon?.external?.url || '📋',
+      title: extractTitle(db.title) || 'Sin título',
+      icon: extractIcon(db.icon) || '📋',
       url: db.url
     }));
 
@@ -248,29 +253,48 @@ async function getDatabases() {
   }
 }
 
-// Obtener esquema de una base de datos
+/**
+ * Obtener esquema de una base de datos
+ * GET /v1/databases/{database_id}
+ * Retorna todas las propiedades y sus tipos para construir formularios dinámicos
+ */
 async function getDatabaseSchema(databaseId) {
   const token = await getToken();
   if (!token) {
-    throw new Error('No autenticado');
+    throw new Error('No autenticado. Configura tu Internal Integration Token.');
+  }
+
+  if (!databaseId) {
+    throw new Error('databaseId es requerido');
   }
 
   try {
     const response = await fetch(`${NOTION_CONFIG.apiBase}/databases/${databaseId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Notion-Version': '2022-06-28'
+        'Notion-Version': NOTION_CONFIG.apiVersion
       }
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error obteniendo esquema');
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (response.status === 401) {
+        throw new Error('Token inválido');
+      }
+      if (response.status === 403) {
+        throw new Error('Sin acceso a esta base de datos. Compártela con la integración.');
+      }
+      if (response.status === 404) {
+        throw new Error('Base de datos no encontrada');
+      }
+      
+      throw new Error(errorData.message || `Error obteniendo esquema: ${response.status}`);
     }
 
     const data = await response.json();
     
-    // Extraer propiedades relevantes
+    // Extraer propiedades relevantes dinámicamente
     const properties = {};
     for (const [name, prop] of Object.entries(data.properties)) {
       properties[name] = {
@@ -279,19 +303,37 @@ async function getDatabaseSchema(databaseId) {
         name: name
       };
 
-      // Agregar opciones para select/multi_select
+      // Agregar opciones para select/multi_select/status
       if (prop.type === 'select' && prop.select?.options) {
-        properties[name].options = prop.select.options;
+        properties[name].options = prop.select.options.map(opt => ({
+          id: opt.id,
+          name: opt.name,
+          color: opt.color
+        }));
       }
       if (prop.type === 'multi_select' && prop.multi_select?.options) {
-        properties[name].options = prop.multi_select.options;
+        properties[name].options = prop.multi_select.options.map(opt => ({
+          id: opt.id,
+          name: opt.name,
+          color: opt.color
+        }));
       }
       if (prop.type === 'status' && prop.status?.options) {
-        properties[name].options = prop.status.options;
+        properties[name].options = prop.status.options.map(opt => ({
+          id: opt.id,
+          name: opt.name,
+          color: opt.color
+        }));
+        properties[name].groups = prop.status.groups;
       }
     }
 
-    return { success: true, properties, title: data.title?.[0]?.plain_text };
+    return { 
+      success: true, 
+      properties, 
+      title: extractTitle(data.title),
+      id: data.id
+    };
 
   } catch (error) {
     console.error('Error obteniendo esquema:', error);
@@ -299,59 +341,100 @@ async function getDatabaseSchema(databaseId) {
   }
 }
 
-// Crear tarea en Notion
+/**
+ * Crear una página dentro de una base de datos
+ * POST /v1/pages
+ * 
+ * Construye propiedades dinámicamente basándose en el schema de la DB
+ * Soporta: title, date, select, multi_select, rich_text, checkbox, etc.
+ */
 async function createTask(task) {
   const token = await getToken();
   if (!token) {
-    throw new Error('No autenticado');
+    throw new Error('No autenticado. Configura tu Internal Integration Token.');
+  }
+
+  if (!task.databaseId) {
+    throw new Error('databaseId es requerido');
+  }
+
+  if (!task.title) {
+    throw new Error('El título es requerido');
   }
 
   try {
-    // Construir propiedades de la página
-    const properties = {};
-
-    // Título (requerido)
-    if (task.title) {
-      properties[task.titleProperty || 'Name'] = {
-        title: [{ text: { content: task.title } }]
-      };
+    // Obtener schema de la DB para construir propiedades correctamente
+    const schemaResponse = await getDatabaseSchema(task.databaseId);
+    if (!schemaResponse.success) {
+      throw new Error('No se pudo obtener el esquema de la base de datos');
     }
 
-    // Fecha límite
+    const schema = schemaResponse.properties;
+    
+    // Construir propiedades dinámicamente
+    const properties = {};
+
+    // Buscar propiedad de título (title type)
+    const titleProperty = Object.keys(schema).find(name => schema[name].type === 'title');
+    if (!titleProperty) {
+      throw new Error('La base de datos no tiene una propiedad de tipo "title"');
+    }
+    
+    // Título (requerido)
+    properties[titleProperty] = {
+      title: [{ text: { content: task.title } }]
+    };
+
+    // Fecha límite (buscar propiedad date)
     if (task.dueDate) {
-      properties[task.dateProperty || 'Date'] = {
-        date: { start: task.dueDate }
-      };
+      const dateProperty = task.dateProperty || Object.keys(schema).find(name => 
+        schema[name].type === 'date'
+      );
+      if (dateProperty && schema[dateProperty]) {
+        properties[dateProperty] = {
+          date: { start: task.dueDate }
+        };
+      }
     }
 
     // Prioridad (select)
     if (task.priority) {
-      properties[task.priorityProperty || 'Priority'] = {
-        select: { name: task.priority }
-      };
+      const priorityProperty = task.priorityProperty || Object.keys(schema).find(name => 
+        schema[name].type === 'select' || schema[name].type === 'status'
+      );
+      if (priorityProperty && schema[priorityProperty]) {
+        const propType = schema[priorityProperty].type;
+        if (propType === 'select') {
+          properties[priorityProperty] = {
+            select: { name: task.priority }
+          };
+        } else if (propType === 'status') {
+          properties[priorityProperty] = {
+            status: { name: task.priority }
+          };
+        }
+      }
     }
 
     // Etiquetas (multi_select)
     if (task.tags && task.tags.length > 0) {
-      properties[task.tagsProperty || 'Tags'] = {
-        multi_select: task.tags.map(tag => ({ name: tag }))
-      };
+      const tagsProperty = task.tagsProperty || Object.keys(schema).find(name => 
+        schema[name].type === 'multi_select'
+      );
+      if (tagsProperty && schema[tagsProperty]) {
+        properties[tagsProperty] = {
+          multi_select: task.tags.map(tag => ({ name: tag }))
+        };
+      }
     }
 
-    // Asignado (people)
-    if (task.assignee) {
-      properties[task.assigneeProperty || 'Assignee'] = {
-        people: [{ id: task.assignee }]
-      };
-    }
-
-    // Crear página
+    // Crear página con propiedades
     const body = {
       parent: { database_id: task.databaseId },
       properties: properties
     };
 
-    // Agregar descripción como contenido de la página
+    // Agregar descripción como contenido de la página usando blocks
     if (task.description) {
       body.children = [
         {
@@ -368,15 +451,32 @@ async function createTask(task) {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Notion-Version': '2022-06-28',
+        'Notion-Version': NOTION_CONFIG.apiVersion,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error creando tarea');
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (response.status === 401) {
+        throw new Error('Token inválido');
+      }
+      if (response.status === 403) {
+        throw new Error('Sin permisos para crear páginas en esta base de datos');
+      }
+      if (response.status === 404) {
+        throw new Error('Base de datos no encontrada');
+      }
+      
+      // Errores de validación de propiedades
+      if (response.status === 400) {
+        const errorMsg = errorData.message || 'Error de validación';
+        throw new Error(`Error de validación: ${errorMsg}`);
+      }
+      
+      throw new Error(errorData.message || `Error creando tarea: ${response.status}`);
     }
 
     const data = await response.json();
@@ -396,24 +496,100 @@ async function createTask(task) {
   }
 }
 
-// Obtener usuarios del workspace
+/**
+ * Agregar contenido adicional a una página existente
+ * PATCH /v1/blocks/{block_id}/children
+ * 
+ * Útil para agregar texto largo después de crear la página inicial
+ */
+async function addContentToPage(pageId, blocks) {
+  const token = await getToken();
+  if (!token) {
+    throw new Error('No autenticado. Configura tu Internal Integration Token.');
+  }
+
+  if (!pageId) {
+    throw new Error('pageId es requerido');
+  }
+
+  if (!blocks || !Array.isArray(blocks) || blocks.length === 0) {
+    throw new Error('blocks debe ser un array no vacío');
+  }
+
+  try {
+    const response = await fetch(`${NOTION_CONFIG.apiBase}/blocks/${pageId}/children`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Notion-Version': NOTION_CONFIG.apiVersion,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        children: blocks
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (response.status === 401) {
+        throw new Error('Token inválido');
+      }
+      if (response.status === 403) {
+        throw new Error('Sin permisos para modificar esta página');
+      }
+      if (response.status === 404) {
+        throw new Error('Página no encontrada');
+      }
+      
+      throw new Error(errorData.message || `Error agregando contenido: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return {
+      success: true,
+      blocks: data.results
+    };
+
+  } catch (error) {
+    console.error('Error agregando contenido:', error);
+    throw error;
+  }
+}
+
+/**
+ * Obtener usuarios del workspace
+ * GET /v1/users
+ * 
+ * Nota: Con Internal Integration, esto solo retorna el bot mismo
+ * Para obtener usuarios reales se necesita OAuth
+ */
 async function getWorkspaceUsers() {
   const token = await getToken();
   if (!token) {
-    throw new Error('No autenticado');
+    throw new Error('No autenticado. Configura tu Internal Integration Token.');
   }
 
   try {
     const response = await fetch(`${NOTION_CONFIG.apiBase}/users`, {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Notion-Version': '2022-06-28'
+        'Notion-Version': NOTION_CONFIG.apiVersion
       }
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error obteniendo usuarios');
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (response.status === 401) {
+        throw new Error('Token inválido');
+      }
+      if (response.status === 403) {
+        throw new Error('Sin permisos para obtener usuarios');
+      }
+      
+      throw new Error(errorData.message || `Error obteniendo usuarios: ${response.status}`);
     }
 
     const data = await response.json();
@@ -435,7 +611,11 @@ async function getWorkspaceUsers() {
   }
 }
 
-// Helpers
+// === Helpers ===
+
+/**
+ * Obtener token almacenado
+ */
 async function getToken() {
   if (notionToken) return notionToken;
   const result = await chrome.storage.local.get(['notionToken']);
@@ -443,9 +623,24 @@ async function getToken() {
   return notionToken;
 }
 
-function generateRandomState() {
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+/**
+ * Extraer título de un array de rich text
+ */
+function extractTitle(titleArray) {
+  if (!titleArray || !Array.isArray(titleArray) || titleArray.length === 0) {
+    return null;
+  }
+  return titleArray.map(t => t.plain_text || '').join('');
+}
+
+/**
+ * Extraer icono de una base de datos
+ */
+function extractIcon(icon) {
+  if (!icon) return null;
+  if (icon.type === 'emoji') return icon.emoji;
+  if (icon.type === 'external') return icon.external?.url;
+  if (icon.type === 'file') return icon.file?.url;
+  return null;
 }
 

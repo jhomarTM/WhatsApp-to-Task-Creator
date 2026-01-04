@@ -30,37 +30,25 @@
 
 ### Configuración de Notion
 
-Antes de usar la extensión, necesitas configurar una integración de Notion:
+Esta extensión usa **Internal Integration** de Notion (NO OAuth). Es más simple y no requiere configuración en código:
 
-1. Ve a [Notion Developers](https://developers.notion.com/)
-2. Crea una nueva integración (New integration)
-3. Copia el **Client ID** y **Client Secret**
-4. Configura la **Redirect URI** con: `https://YOUR_EXTENSION_ID.chromiumapp.org/`
-5. Edita `background/background.js` y actualiza:
+1. Ve a [Notion Integrations](https://www.notion.so/my-integrations)
+2. Crea una nueva integración (tipo **Internal**)
+3. Copia el **Internal Integration Token** (formato: `secret_xxx...`)
+4. Comparte tus bases de datos con la integración:
+   - Abre cada base de datos en Notion
+   - Menú "..." → "Connections" → Conecta tu integración
+5. En la extensión, ingresa el token en el popup
 
-```javascript
-const NOTION_CONFIG = {
-  clientId: 'TU_CLIENT_ID',
-  clientSecret: 'TU_CLIENT_SECRET',
-  // ...
-};
-```
-
-6. En el `manifest.json`, actualiza el campo `oauth2.client_id`
-
-### Obtener el Extension ID
-
-1. Carga la extensión en Chrome
-2. Ve a `chrome://extensions/`
-3. Copia el ID que aparece debajo del nombre de la extensión
-4. Actualiza la Redirect URI en Notion y en `manifest.json`
+📖 **Guía completa**: Ver [SETUP.md](./SETUP.md) para instrucciones detalladas.
 
 ## 🚀 Uso
 
 1. **Conecta con Notion**
    - Haz clic en el ícono de la extensión
+   - Ingresa tu **Internal Integration Token** (obténlo en [my-integrations](https://www.notion.so/my-integrations))
    - Presiona "Conectar con Notion"
-   - Autoriza el acceso a tu workspace
+   - ✅ Verifica que aparezcan tus bases de datos
 
 2. **Crea una tarea**
    - Abre [WhatsApp Web](https://web.whatsapp.com)
@@ -73,16 +61,18 @@ const NOTION_CONFIG = {
 ```
 ├── manifest.json           # Configuración de la extensión
 ├── background/
-│   └── background.js       # Service worker: OAuth y API
+│   └── background.js       # Service worker: Internal Integration Token y API
 ├── content/
 │   ├── content.js          # Script inyectado en WhatsApp
 │   └── content.css         # Estilos del sidebar
 ├── popup/
-│   ├── popup.html          # UI de configuración
+│   ├── popup.html          # UI de configuración (token input)
 │   ├── popup.css           # Estilos del popup
 │   └── popup.js            # Lógica del popup
 ├── utils/
 │   └── notion-api.js       # Wrapper para la API de Notion
+├── SETUP.md                # Guía completa de configuración
+└── NOTION_API_EXAMPLES.md  # Ejemplos de código
 ├── icons/
 │   └── icon.svg            # Ícono de la extensión
 └── README.md
@@ -130,8 +120,10 @@ Puedes agregar o quitar campos editando el HTML en `content/content.js` dentro d
 ## 📋 Roadmap
 
 - [x] MVP - Captura básica y creación de tareas
-- [x] OAuth con Notion
+- [x] Internal Integration con Notion (2024-2025)
 - [x] Formulario con campos esenciales
+- [x] Manejo dinámico de propiedades de base de datos
+- [x] Agregar contenido a páginas existentes
 - [ ] Captura desde mensaje existente (click derecho)
 - [ ] Plantillas de tareas predefinidas
 - [ ] Atajos de teclado
@@ -140,8 +132,10 @@ Puedes agregar o quitar campos editando el HTML en `content/content.js` dentro d
 ## ⚠️ Limitaciones conocidas
 
 - WhatsApp Web puede cambiar su interfaz, lo que puede romper los selectores DOM
-- La API de Notion tiene rate limits (3 peticiones/segundo aprox.)
-- El OAuth token expira y puede requerir reconexión
+- La API de Notion tiene rate limits (~3 peticiones/segundo)
+- El bot solo ve bases de datos que compartas explícitamente
+- Con Internal Integration no puedes obtener lista de usuarios del workspace
+- Compatible con cuenta Notion Free (sin límites adicionales)
 
 ## 📄 Licencia
 
