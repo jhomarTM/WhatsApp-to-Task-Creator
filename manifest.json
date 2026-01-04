@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "WhatsApp Task to Notion",
+  "version": "1.0.0",
+  "description": "Crea tareas en Notion directamente desde mensajes de WhatsApp Web",
+  "author": "WhatsApp Notion Tasks",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "identity",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://api.notion.com/*"
+  ],
+  "background": {
+    "service_worker": "background/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "WhatsApp Task to Notion"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["sidebar/sidebar.html", "icons/*"],
+      "matches": ["https://web.whatsapp.com/*"]
+    }
+  ],
+  "oauth2": {
+    "client_id": "YOUR_NOTION_CLIENT_ID",
+    "scopes": []
+  },
+  "key": ""
+}
+
