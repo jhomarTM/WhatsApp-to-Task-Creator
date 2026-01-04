@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WhatsApp Task to Notion</title>
+  <title>WhatsApp Task Creator</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -12,123 +12,51 @@
     <header class="popup-header">
       <div class="logo">
         <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 2.16c-.42-.326-.98-.7-2.055-.607L3.01 2.7c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.84-.046.933-.56.933-1.167V6.354c0-.606-.233-.933-.746-.886l-15.177.886c-.56.047-.747.327-.747.934zm14.337.745c.093.42 0 .84-.42.886l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.746 0-.933-.234-1.494-.933l-4.577-7.186v6.952l1.448.327s0 .84-1.168.84l-3.22.186c-.094-.187 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.454-.233 4.764 7.279v-6.44l-1.215-.14c-.093-.513.28-.886.746-.933zM2.332 1.68l13.582-.933c1.68-.14 2.101-.046 3.148.7l4.344 3.054c.7.513.933.653.933 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.046-1.448-.094-1.962-.747l-3.127-4.06c-.56-.747-.793-1.306-.793-1.96V2.986c0-.84.374-1.447 1.213-1.307z"/>
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM17.99 9l-1.41-1.42-6.59 6.59-2.58-2.57-1.42 1.41 4 3.99z"/>
         </svg>
-        <span class="logo-text">Notion Tasks</span>
+        <span class="logo-text">Task Creator</span>
       </div>
     </header>
 
     <!-- Content -->
     <main class="popup-content">
-      <!-- Estado: Cargando -->
-      <div id="state-loading" class="state active">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">Verificando conexión...</p>
+      <div class="status-card">
+        <div class="status-icon">✅</div>
+        <div class="status-info">
+          <span class="status-label">Extensión activa</span>
+          <span class="status-text">Lista para capturar mensajes</span>
+        </div>
       </div>
 
-      <!-- Estado: No conectado -->
-      <div id="state-disconnected" class="state">
-        <div class="state-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-          </svg>
-        </div>
-        <h2 class="state-title">Conecta con Notion</h2>
-        <p class="state-description">Ingresa tu Internal Integration Token de Notion para empezar a crear tareas.</p>
-        
-        <div class="token-form">
-          <label for="notion-token-input" class="token-label">
-            Internal Integration Token
-            <a href="https://www.notion.so/my-integrations" target="_blank" class="help-link" title="Crear integración">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-              </svg>
-            </a>
-          </label>
-          <input 
-            type="password" 
-            id="notion-token-input" 
-            class="token-input" 
-            placeholder="secret_xxx..."
-            autocomplete="off"
-          />
-          <p class="token-hint">
-            Obtén tu token en 
-            <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a>
-          </p>
-        </div>
-        
-        <button id="btn-connect" class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 2.16c-.42-.326-.98-.7-2.055-.607L3.01 2.7c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.84-.046.933-.56.933-1.167V6.354c0-.606-.233-.933-.746-.886l-15.177.886c-.56.047-.747.327-.747.934z"/>
-          </svg>
-          Conectar con Notion
-        </button>
+      <div class="instructions">
+        <h3 class="instructions-title">Cómo usar</h3>
+        <ol class="instructions-list">
+          <li>Abre <strong>WhatsApp Web</strong></li>
+          <li>Pasa el mouse sobre cualquier mensaje</li>
+          <li>Haz clic en el botón <span class="badge">☑️</span> que aparece</li>
+          <li>Completa los detalles de la tarea</li>
+          <li>¡Listo! Tu tarea quedará guardada</li>
+        </ol>
       </div>
 
-      <!-- Estado: Conectado -->
-      <div id="state-connected" class="state">
-        <div class="connection-info">
-          <div class="workspace-icon" id="workspace-icon">🤖</div>
-          <div class="workspace-details">
-            <span class="workspace-label">Bot conectado</span>
-            <span class="workspace-name" id="workspace-name">Notion Integration</span>
-          </div>
-          <div class="status-badge">
-            <span class="status-dot"></span>
-            Activo
-          </div>
+      <div class="stats-card">
+        <div class="stat">
+          <span class="stat-value" id="task-count">0</span>
+          <span class="stat-label">Tareas creadas</span>
         </div>
-
-        <div class="stats-card">
-          <div class="stat-item">
-            <span class="stat-value" id="db-count">0</span>
-            <span class="stat-label">Bases de datos</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <span class="stat-value" id="recent-tasks">—</span>
-            <span class="stat-label">Tareas recientes</span>
-          </div>
-        </div>
-
-        <div class="instructions">
-          <h3 class="instructions-title">Cómo usar</h3>
-          <ol class="instructions-list">
-            <li>Abre WhatsApp Web</li>
-            <li>Haz clic en el botón <span class="icon-badge">☑️</span> junto al campo de mensaje</li>
-            <li>Completa el formulario y crea tu tarea</li>
-          </ol>
-        </div>
-
-        <button id="btn-disconnect" class="btn btn-secondary btn-small">
-          Desconectar cuenta
-        </button>
       </div>
 
-      <!-- Estado: Error -->
-      <div id="state-error" class="state">
-        <div class="state-icon error">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-          </svg>
-        </div>
-        <h2 class="state-title">Ocurrió un error</h2>
-        <p class="state-description" id="error-message">No se pudo conectar con Notion.</p>
-        <button id="btn-retry" class="btn btn-primary">
-          Reintentar
-        </button>
-      </div>
+      <button id="btn-view-tasks" class="btn btn-secondary">
+        📋 Ver todas las tareas
+      </button>
     </main>
 
     <!-- Footer -->
     <footer class="popup-footer">
       <span class="version">v1.0.0</span>
-      <a href="https://github.com" target="_blank" class="footer-link">Ayuda</a>
     </footer>
   </div>
 
   <script src="popup.js"></script>
 </body>
 </html>
-

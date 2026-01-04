@@ -1,6 +1,6 @@
 /**
- * Content Styles - WhatsApp Task to Notion
- * Estilos para el botón de captura y sidebar
+ * Content Styles - WhatsApp Task Creator
+ * Estilos para el sidebar de tareas (izquierda)
  */
 
 /* Variables de color - Tema WhatsApp oscuro */
@@ -22,73 +22,12 @@
   --wtn-radius: 8px;
   --wtn-radius-lg: 12px;
   --wtn-transition: 150ms ease;
+  --wtn-success: #22c55e;
+  --wtn-error: #ef4444;
 }
 
 /* ========================================
-   BOTÓN DE CAPTURA
-   ======================================== */
-
-.wtn-capture-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: none;
-  background: transparent;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background var(--wtn-transition);
-  position: relative;
-}
-
-.wtn-capture-btn:hover {
-  background: var(--wtn-bg-hover);
-}
-
-.wtn-capture-btn:active {
-  transform: scale(0.95);
-}
-
-.wtn-capture-btn svg {
-  width: 22px;
-  height: 22px;
-  fill: var(--wtn-text-secondary);
-  transition: fill var(--wtn-transition);
-}
-
-.wtn-capture-btn:hover svg {
-  fill: var(--wtn-primary);
-}
-
-/* Tooltip */
-.wtn-capture-btn::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 6px 10px;
-  background: var(--wtn-bg-card);
-  color: var(--wtn-text);
-  font-size: 12px;
-  white-space: nowrap;
-  border-radius: 6px;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--wtn-transition), visibility var(--wtn-transition);
-  box-shadow: var(--wtn-shadow);
-  margin-bottom: 6px;
-  z-index: 10001;
-}
-
-.wtn-capture-btn:hover::after {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* ========================================
-   OVERLAY Y SIDEBAR
+   OVERLAY
    ======================================== */
 
 .wtn-overlay {
@@ -109,26 +48,49 @@
   visibility: visible;
 }
 
+/* ========================================
+   SIDEBAR (IZQUIERDA)
+   ======================================== */
+
 .wtn-sidebar {
   position: fixed;
   top: 0;
-  right: 0;
-  width: 360px;
+  width: 380px;
   height: 100%;
   background: var(--wtn-bg-dark);
   z-index: 9999;
   display: flex;
   flex-direction: column;
   box-shadow: var(--wtn-shadow-lg);
-  transform: translateX(100%);
   transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.wtn-sidebar.active {
+/* Sidebar a la izquierda */
+.wtn-sidebar-left {
+  left: 0;
+  transform: translateX(-100%);
+  border-right: 1px solid var(--wtn-border);
+}
+
+.wtn-sidebar-left.active {
   transform: translateX(0);
 }
 
-/* Header del sidebar */
+/* Sidebar a la derecha (alternativo) */
+.wtn-sidebar-right {
+  right: 0;
+  transform: translateX(100%);
+  border-left: 1px solid var(--wtn-border);
+}
+
+.wtn-sidebar-right.active {
+  transform: translateX(0);
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
 .wtn-sidebar-header {
   display: flex;
   align-items: center;
@@ -143,14 +105,14 @@
   align-items: center;
   gap: 10px;
   color: var(--wtn-text);
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 600;
   margin: 0;
 }
 
 .wtn-sidebar-title svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   fill: var(--wtn-primary);
 }
 
@@ -158,8 +120,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: none;
   background: transparent;
   border-radius: 50%;
@@ -172,12 +134,15 @@
 }
 
 .wtn-close-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   fill: var(--wtn-text-secondary);
 }
 
-/* Body del sidebar */
+/* ========================================
+   BODY
+   ======================================== */
+
 .wtn-sidebar-body {
   flex: 1;
   overflow-y: auto;
@@ -197,9 +162,65 @@
   border-radius: 3px;
 }
 
-/* Campos del formulario */
-.wtn-form-group {
+/* ========================================
+   MESSAGE PREVIEW
+   ======================================== */
+
+.wtn-message-preview {
+  background: var(--wtn-bg-card);
+  border-radius: var(--wtn-radius-lg);
+  padding: 14px 16px;
   margin-bottom: 20px;
+  border-left: 3px solid var(--wtn-primary);
+}
+
+.wtn-preview-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--wtn-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.wtn-preview-sender {
+  font-size: 12px;
+  color: var(--wtn-text-muted);
+  margin-bottom: 4px;
+}
+
+.wtn-preview-text {
+  font-size: 14px;
+  color: var(--wtn-text);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* ========================================
+   FORM
+   ======================================== */
+
+.wtn-form-group {
+  margin-bottom: 18px;
+  animation: wtn-slide-up 300ms ease backwards;
+}
+
+.wtn-form-group:nth-child(1) { animation-delay: 50ms; }
+.wtn-form-group:nth-child(2) { animation-delay: 80ms; }
+.wtn-form-group:nth-child(3) { animation-delay: 110ms; }
+.wtn-form-group:nth-child(4) { animation-delay: 140ms; }
+.wtn-form-group:nth-child(5) { animation-delay: 170ms; }
+.wtn-form-group:nth-child(6) { animation-delay: 200ms; }
+
+@keyframes wtn-slide-up {
+  from { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .wtn-form-label {
@@ -212,9 +233,16 @@
   font-weight: 500;
 }
 
+.wtn-form-label svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
 .wtn-form-label.required::after {
   content: '*';
-  color: #ef4444;
+  color: var(--wtn-error);
+  margin-left: 2px;
 }
 
 .wtn-form-input,
@@ -246,7 +274,7 @@
 
 .wtn-form-textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 70px;
 }
 
 .wtn-form-select {
@@ -263,24 +291,36 @@
   color: var(--wtn-text);
 }
 
-/* Row para campos en línea */
+.wtn-form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--wtn-text-muted);
+}
+
+/* Form Row */
 .wtn-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-/* Input de fecha */
-.wtn-form-input[type="date"] {
+/* Date/Time inputs */
+.wtn-form-input[type="date"],
+.wtn-form-input[type="time"] {
   cursor: pointer;
 }
 
-.wtn-form-input[type="date"]::-webkit-calendar-picker-indicator {
+.wtn-form-input[type="date"]::-webkit-calendar-picker-indicator,
+.wtn-form-input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
   cursor: pointer;
 }
 
-/* Footer del sidebar */
+/* ========================================
+   FOOTER
+   ======================================== */
+
 .wtn-sidebar-footer {
   display: flex;
   gap: 12px;
@@ -303,6 +343,12 @@
   font-family: inherit;
   cursor: pointer;
   transition: all var(--wtn-transition);
+}
+
+.wtn-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
 }
 
 .wtn-btn-secondary {
@@ -332,13 +378,7 @@
   cursor: not-allowed;
 }
 
-.wtn-btn svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-
-/* Estados de carga y éxito */
+/* Loading State */
 .wtn-btn-loading {
   position: relative;
   color: transparent !important;
@@ -359,7 +399,10 @@
   to { transform: rotate(360deg); }
 }
 
-/* Mensajes de estado */
+/* ========================================
+   MESSAGES
+   ======================================== */
+
 .wtn-message {
   display: flex;
   align-items: center;
@@ -368,18 +411,12 @@
   border-radius: var(--wtn-radius);
   font-size: 13px;
   margin-bottom: 16px;
+  animation: wtn-fade-in 200ms ease;
 }
 
-.wtn-message-success {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.wtn-message-error {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+@keyframes wtn-fade-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .wtn-message svg {
@@ -389,58 +426,14 @@
   flex-shrink: 0;
 }
 
-/* Estado no conectado */
-.wtn-not-connected {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 20px;
-  gap: 16px;
+.wtn-message-success {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--wtn-success);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
-.wtn-not-connected svg {
-  width: 48px;
-  height: 48px;
-  fill: var(--wtn-text-muted);
+.wtn-message-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--wtn-error);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
-
-.wtn-not-connected p {
-  color: var(--wtn-text-secondary);
-  font-size: 14px;
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* ========================================
-   ANIMACIONES
-   ======================================== */
-
-@keyframes wtn-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes wtn-slide-up {
-  from { 
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.wtn-form-group {
-  animation: wtn-slide-up 300ms ease backwards;
-}
-
-.wtn-form-group:nth-child(1) { animation-delay: 50ms; }
-.wtn-form-group:nth-child(2) { animation-delay: 100ms; }
-.wtn-form-group:nth-child(3) { animation-delay: 150ms; }
-.wtn-form-group:nth-child(4) { animation-delay: 200ms; }
-.wtn-form-group:nth-child(5) { animation-delay: 250ms; }
-.wtn-form-group:nth-child(6) { animation-delay: 300ms; }
-
