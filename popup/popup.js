@@ -97,13 +97,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     
     const token = elements.tokenInput.value.trim();
-    const databaseId = elements.databaseInput.value.trim();
+    let databaseId = elements.databaseInput.value.trim();
     const openaiKey = elements.openaiKeyInput.value.trim();
     
     if (!token || !databaseId) {
       showMessage('error', 'Token y Database ID son requeridos');
       return;
     }
+    
+    // Extraer Database ID de URL si es necesario
+    databaseId = extractDatabaseId(databaseId);
 
     elements.btnSave.disabled = true;
     elements.btnSave.textContent = 'Conectando...';
@@ -169,6 +172,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => showState('setup'), 500);
     }
   });
+
+  // Extraer Database ID de una URL de Notion
+  function extractDatabaseId(input) {
+    // Si ya es un ID limpio (32 caracteres hex)
+    if (/^[a-f0-9]{32}$/i.test(input.replace(/-/g, ''))) {
+      return input.replace(/-/g, '');
+    }
+    
+    // Intentar extraer de URL
+    // Formato: https://www.notion.so/workspace/DATABASE_ID?v=...
+    // O: https://www.notion.so/DATABASE_ID?v=...
+    const patterns = [
+      /notion\.so\/[^\/]+\/([a-f0-9]{32})/i,
+      /notion\.so\/([a-f0-9]{32})/i,
+      /([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i,
+      /([a-f0-9]{32})/i
+    ];
+    
+    for (const pattern of patterns) {
+      const match = input.match(pattern);
+      if (match) {
+        return match[1].replace(/-/g, '');
+      }
+    }
+    
+    return input; // Devolver original si no se puede extraer
+  }
 
   // Iniciar
   await checkConfig();
