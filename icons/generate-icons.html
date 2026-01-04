@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Íconos - WhatsApp Task to Notion</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 { color: #00a884; }
+    .icons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
+    .icon-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    canvas {
+      border: 2px solid #333;
+      border-radius: 12px;
+    }
+    .size { color: #888; font-size: 14px; }
+    button {
+      background: #00a884;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    button:hover { background: #06cf9c; }
+    .instructions {
+      background: #2a2a4e;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 40px auto;
+      text-align: left;
+    }
+    .instructions h2 { color: #00a884; margin-top: 0; }
+    .instructions ol { padding-left: 20px; }
+    .instructions li { margin: 10px 0; }
+    code {
+      background: #1a1a2e;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Generador de Íconos</h1>
+  <p>Haz clic en cada botón para descargar el ícono correspondiente</p>
+  
+  <div class="icons">
+    <div class="icon-wrapper">
+      <canvas id="icon16" width="16" height="16"></canvas>
+      <span class="size">16x16</span>
+      <button onclick="download('icon16', 16)">Descargar icon16.png</button>
+    </div>
+    <div class="icon-wrapper">
+      <canvas id="icon48" width="48" height="48"></canvas>
+      <span class="size">48x48</span>
+      <button onclick="download('icon48', 48)">Descargar icon48.png</button>
+    </div>
+    <div class="icon-wrapper">
+      <canvas id="icon128" width="128" height="128"></canvas>
+      <span class="size">128x128</span>
+      <button onclick="download('icon128', 128)">Descargar icon128.png</button>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <h2>📋 Instrucciones</h2>
+    <ol>
+      <li>Abre este archivo en tu navegador</li>
+      <li>Descarga los 3 íconos haciendo clic en cada botón</li>
+      <li>Mueve los archivos descargados a la carpeta <code>icons/</code></li>
+      <li>Verifica que los nombres sean: <code>icon16.png</code>, <code>icon48.png</code>, <code>icon128.png</code></li>
+    </ol>
+  </div>
+
+  <script>
+    const sizes = [16, 48, 128];
+    
+    // Dibujar ícono en cada canvas
+    sizes.forEach(size => {
+      const canvas = document.getElementById(`icon${size}`);
+      const ctx = canvas.getContext('2d');
+      drawIcon(ctx, size);
+    });
+
+    function drawIcon(ctx, size) {
+      const scale = size / 128;
+      
+      // Fondo con gradiente
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#00a884');
+      gradient.addColorStop(1, '#06cf9c');
+      
+      // Círculo de fondo
+      ctx.beginPath();
+      ctx.arc(size/2, size/2, size/2 - 2*scale, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      
+      // Checkmark
+      ctx.beginPath();
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = Math.max(2, 8 * scale);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      // Puntos del checkmark escalados
+      const points = [
+        { x: 94, y: 40 },   // Inicio
+        { x: 54, y: 80 },   // Medio
+        { x: 34, y: 60 }    // Fin
+      ];
+      
+      ctx.moveTo(points[0].x * scale, points[0].y * scale);
+      ctx.lineTo(points[1].x * scale, points[1].y * scale);
+      ctx.lineTo(points[2].x * scale, points[2].y * scale);
+      ctx.stroke();
+      
+      // Línea decorativa (solo para tamaños grandes)
+      if (size >= 48) {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.roundRect(40 * scale, 88 * scale, 48 * scale, 4 * scale, 2 * scale);
+        ctx.fill();
+      }
+    }
+
+    function download(id, size) {
+      const canvas = document.getElementById(id);
+      const link = document.createElement('a');
+      link.download = `icon${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>
+

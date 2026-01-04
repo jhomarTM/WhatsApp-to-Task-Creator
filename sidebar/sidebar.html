@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva Tarea - Notion</title>
+  <link rel="stylesheet" href="sidebar.css">
+</head>
+<body>
+  <div class="sidebar-container">
+    <!-- Header -->
+    <header class="sidebar-header">
+      <h2 class="sidebar-title">
+        <svg class="notion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 2.16c-.42-.326-.98-.7-2.055-.607L3.01 2.7c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.84-.046.933-.56.933-1.167V6.354c0-.606-.233-.933-.746-.886l-15.177.886c-.56.047-.747.327-.747.934z"/>
+        </svg>
+        <span>Nueva tarea</span>
+      </h2>
+      <button class="close-btn" id="btn-close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Content -->
+    <main class="sidebar-body">
+      <!-- Mensajes de estado -->
+      <div id="message-container"></div>
+
+      <!-- Formulario -->
+      <form id="task-form">
+        <!-- Título -->
+        <div class="form-group">
+          <label class="form-label required">Título</label>
+          <input 
+            type="text" 
+            id="task-title" 
+            class="form-input" 
+            placeholder="¿Qué necesitas hacer?"
+            required
+          >
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea 
+            id="task-description" 
+            class="form-textarea" 
+            placeholder="Agrega contexto adicional..."
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- Fecha y Prioridad -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">📅</span>
+              Fecha límite
+            </label>
+            <input 
+              type="date" 
+              id="task-due-date" 
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-icon">🏷️</span>
+              Prioridad
+            </label>
+            <select id="task-priority" class="form-select">
+              <option value="">Sin prioridad</option>
+              <option value="Alta">🔴 Alta</option>
+              <option value="Media">🟡 Media</option>
+              <option value="Baja">🟢 Baja</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Base de datos -->
+        <div class="form-group">
+          <label class="form-label required">
+            <span class="label-icon">📁</span>
+            Base de datos
+          </label>
+          <select id="task-database" class="form-select" required>
+            <option value="">Selecciona una base de datos...</option>
+          </select>
+        </div>
+
+        <!-- Asignado a (opcional, se muestra si la DB tiene campo people) -->
+        <div class="form-group" id="assignee-group" style="display: none;">
+          <label class="form-label">
+            <span class="label-icon">👤</span>
+            Asignado a
+          </label>
+          <select id="task-assignee" class="form-select">
+            <option value="">Sin asignar</option>
+          </select>
+        </div>
+
+        <!-- Etiquetas (opcional) -->
+        <div class="form-group" id="tags-group" style="display: none;">
+          <label class="form-label">
+            <span class="label-icon">🏷️</span>
+            Etiquetas
+          </label>
+          <div id="tags-container" class="tags-container">
+            <!-- Tags dinámicos -->
+          </div>
+        </div>
+      </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-secondary" id="btn-cancel">
+        Cancelar
+      </button>
+      <button type="submit" form="task-form" class="btn btn-primary" id="btn-create">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+        <span>Crear tarea</span>
+      </button>
+    </footer>
+  </div>
+
+  <script src="sidebar.js"></script>
+</body>
+</html>
+
