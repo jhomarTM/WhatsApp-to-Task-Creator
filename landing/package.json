@@ -1,0 +1,19 @@
+{
+    "name": "wa-task-to-notion-landing",
+    "version": "1.0.0",
+    "description": "Landing page for WhatsApp Task to Notion Chrome Extension",
+    "scripts": {
+        "dev": "npx serve .",
+        "start": "npx serve ."
+    },
+    "keywords": [
+        "whatsapp",
+        "notion",
+        "tasks",
+        "productivity",
+        "chrome-extension",
+        "landing-page"
+    ],
+    "author": "",
+    "license": "MIT"
+}

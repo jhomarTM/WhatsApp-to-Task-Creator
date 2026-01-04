@@ -511,35 +511,39 @@
       dueDate: dueDate || null,
       dueTime: dueTime || null,
       priority: priority || null,
-      project: project || null,
+      taskType: project || null, // Mapear proyecto a tipo de tarea
       assignee: assignee || null,
       tags,
       sourceMessage: selectedMessage ? {
         text: selectedMessage.text,
         sender: selectedMessage.sender,
         time: selectedMessage.time
-      } : null,
-      createdAt: new Date().toISOString(),
-      completed: false
+      } : null
     };
 
-    // Simular guardado
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Guardar tarea
-    tasks.push(task);
-    await saveTasks();
-    
-    console.log('✅ Tarea creada:', task);
-    
-    // Mostrar éxito
-    showMessage(messageContainer, 'success', '¡Tarea creada exitosamente!');
-    
-    // Cerrar después de 1s
-    setTimeout(closeSidebar, 1000);
-    
-    createBtn.classList.remove('wtn-btn-loading');
-    createBtn.disabled = false;
+    try {
+      // Enviar a Notion
+      const response = await chrome.runtime.sendMessage({
+        type: 'CREATE_NOTION_TASK',
+        task: task
+      });
+
+      if (response.success) {
+        console.log('✅ Tarea creada en Notion:', response.url);
+        showMessage(messageContainer, 'success', '¡Tarea creada en Notion!');
+        
+        // Cerrar después de 1.5s
+        setTimeout(closeSidebar, 1500);
+      } else {
+        throw new Error(response.error || 'Error desconocido');
+      }
+    } catch (error) {
+      console.error('❌ Error:', error);
+      showMessage(messageContainer, 'error', `Error: ${error.message}`);
+    } finally {
+      createBtn.classList.remove('wtn-btn-loading');
+      createBtn.disabled = false;
+    }
   }
 
   // Mostrar mensaje

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Crea tareas en Notion directamente desde WhatsApp Web. Captura mensajes y conviértelos en tareas organizadas en segundos.">
+    <meta name="keywords" content="WhatsApp, Notion, productividad, tareas, extensión Chrome, organización">
+    <meta property="og:title" content="WhatsApp Task to Notion - De mensaje a tarea en segundos">
+    <meta property="og:description"
+        content="Convierte tus mensajes de WhatsApp en tareas de Notion sin salir de la conversación.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>WhatsApp Task to Notion - De mensaje a tarea en segundos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="#" class="logo">
+                <svg class="logo-icon" viewBox="0 0 128 128" width="28" height="28">
+                    <defs>
+                        <linearGradient id="logo-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00a884" />
+                            <stop offset="100%" style="stop-color:#06cf9c" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="64" cy="64" r="60" fill="url(#logo-bg)" />
+                    <path d="M94 40L54 80L34 60" stroke="white" stroke-width="8" stroke-linecap="round"
+                        stroke-linejoin="round" fill="none" />
+                    <rect x="40" y="88" width="48" height="4" rx="2" fill="white" opacity="0.8" />
+                </svg>
+                <span>WA Task to Notion</span>
+            </a>
+            <nav class="nav">
+                <a href="#features">Características</a>
+                <a href="#how-it-works">Cómo funciona</a>
+                <a href="#privacy">Privacidad</a>
+                <a href="https://github.com/jhomarTM/WhatsApp-to-Task-Creator" class="btn btn-nav" target="_blank">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    GitHub
+                </a>
+            </nav>
+            <button class="mobile-menu-btn" aria-label="Menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Extensión gratuita para Chrome
+            </div>
+
+            <h1 class="hero-title">
+                De mensaje de WhatsApp a
+                <span class="gradient-text">tarea en Notion</span>
+                en segundos
+            </h1>
+
+            <p class="hero-subtitle">
+                Captura cualquier conversación de WhatsApp Web y conviértela en una tarea
+                organizada en tu workspace de Notion. Sin copiar y pegar, sin cambiar de app.
+            </p>
+
+            <div class="hero-ctas">
+                <a href="https://github.com/jhomarTM/WhatsApp-to-Task-Creator" class="btn btn-primary" target="_blank">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    Descargar gratis
+                </a>
+                <a href="#how-it-works" class="btn btn-secondary">
+                    Ver cómo funciona
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+                    </svg>
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">&lt;15s</span>
+                    <span class="stat-label">para crear una tarea</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">privado y local</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">servidores intermediarios</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Visual -->
+        <div class="hero-visual">
+            <div class="browser-mockup">
+                <div class="browser-header">
+                    <div class="browser-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="browser-url">web.whatsapp.com</div>
+                </div>
+                <div class="browser-content">
+                    <div class="wa-interface">
+                        <div class="wa-chat">
+                            <div class="wa-message incoming">
+                                <span class="wa-msg-text">Necesito el reporte de ventas para el viernes</span>
+                                <span class="wa-msg-time">10:42</span>
+                            </div>
+                            <div class="wa-message incoming">
+                                <span class="wa-msg-text">¿Puedes incluir los datos del Q4?</span>
+                                <span class="wa-msg-time">10:43</span>
+                            </div>
+                        </div>
+                        <div class="wa-input-area">
+                            <div class="wa-input">Escribe un mensaje...</div>
+                            <button class="task-btn pulse">☑️</button>
+                        </div>
+                    </div>
+                    <div class="notion-sidebar">
+                        <div class="sidebar-header">
+                            <span>Nueva Tarea</span>
+                            <span class="notion-logo">
+                                <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
+                                    <path
+                                        d="M6.017 4.313l55.333-4.087c6.797-.583 8.543-.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277-1.553 6.807-6.99 7.193L24.467 99.967c-4.08.193-6.023-.39-8.16-3.113L3.3 79.94c-2.333-3.113-3.3-5.443-3.3-8.167V11.113c0-3.497 1.553-6.413 6.017-6.8z"
+                                        fill="#fff" />
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M61.35.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257-3.89c5.437-.387 6.99-2.917 6.99-7.193V20.64c0-2.21-.873-2.847-3.443-4.733L74.167 3.143C69.873-.164 68.127-.557 61.35.227zm1.19 14.887c-1.553.147-1.91.18-2.957-.643L48.17 5.16c-1.163-.937-.583-2.137 2.527-2.333l51.613-3.113c4.277-.39 6.507 1.163 8.357 2.527L74.17 9.63c.583.39 1.167 1.363.19 1.553l-11.82 3.93zm-3.69 80.87V30.82c0-2.527.78-3.687 3.107-3.883l58.213-3.307c2.14-.193 3.11.973 3.11 3.5v64.193c0 2.53-.39 4.67-3.883 4.863l-55.917 3.31c-3.493.193-5.147-.973-4.63-4.013zM85.24 35.67c.39 1.75 0 3.5-1.75 3.7l-2.917.557v47.78c-2.527 1.36-4.853 2.137-6.797 2.137-3.11 0-3.883-.973-6.21-3.887L49.587 52.537v32.293l6.02 1.363s0 3.5-4.857 3.5l-13.393.777c-.39-.78 0-2.723 1.357-3.11l3.497-.973V41.5l-4.857-.39c-.39-1.75.583-4.277 3.3-4.473l14.363-.973 19.443 29.76V38.2l-5.053-.583c-.39-2.143 1.163-3.693 3.107-3.887l13.527-.86z"
+                                        fill="#000" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="sidebar-form">
+                            <div class="form-field">
+                                <label>Título</label>
+                                <input type="text" value="Preparar reporte de ventas Q4" readonly>
+                            </div>
+                            <div class="form-field">
+                                <label>Fecha límite</label>
+                                <input type="text" value="Viernes, 10 Ene" readonly>
+                            </div>
+                            <div class="form-field">
+                                <label>Prioridad</label>
+                                <div class="priority-badges">
+                                    <span class="priority high active">Alta</span>
+                                    <span class="priority medium">Media</span>
+                                    <span class="priority low">Baja</span>
+                                </div>
+                            </div>
+                            <button class="create-task-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                                </svg>
+                                Crear tarea
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">El problema</span>
+                <h2>¿Cuántas tareas se pierden en tus chats?</h2>
+            </div>
+
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">📱</div>
+                    <h3>Mensajes que se olvidan</h3>
+                    <p>Tu jefe te pide algo por WhatsApp y 3 horas después lo olvidaste entre 50 mensajes nuevos.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">🔄</div>
+                    <h3>Copiar y pegar manual</h3>
+                    <p>Abres WhatsApp, copias, abres Notion, pegas, formateas... y pierdes el contexto.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">⏰</div>
+                    <h3>Interrumpe tu flujo</h3>
+                    <p>Cambiar entre apps rompe tu concentración. Cada switch mental cuesta minutos de productividad.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">La solución</span>
+                <h2>Todo lo que necesitas, donde lo necesitas</h2>
+                <p>Un botón integrado en WhatsApp Web que abre un panel para crear tareas al instante.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card featured">
+                    <div class="feature-icon">📝</div>
+                    <h3>Captura instantánea</h3>
+                    <p>Un clic en el botón ☑️ junto al campo de mensaje abre el formulario de tarea sin salir de
+                        WhatsApp.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Formulario completo</h3>
+                    <p>Título, descripción, fecha límite, prioridad y más. Todo lo que necesitas para una tarea bien
+                        definida.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Integración OAuth</h3>
+                    <p>Conecta tu workspace de Notion de forma segura y selecciona la base de datos donde crear las
+                        tareas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌙</div>
+                    <h3>Tema oscuro nativo</h3>
+                    <p>Diseño que se integra perfectamente con la interfaz de WhatsApp Web. Parece parte de la app.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Menos de 15 segundos</h3>
+                    <p>Desde que ves el mensaje hasta que la tarea está en Notion. Sin fricción, sin pasos extra.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Privacidad total</h3>
+                    <p>Los mensajes se procesan localmente. No hay servidor intermedio. Solo tú y Notion.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how-it-works" class="how-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Paso a paso</span>
+                <h2>Así de simple funciona</h2>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Conecta con Notion</h3>
+                        <p>Haz clic en el ícono de la extensión y autoriza el acceso a tu workspace. Solo toma 30
+                            segundos.</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="popup-mockup">
+                            <div class="popup-header">Configuración</div>
+                            <div class="popup-body">
+                                <div class="notion-connect-btn">
+                                    <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
+                                        <path
+                                            d="M6.017 4.313l55.333-4.087c6.797-.583 8.543-.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277-1.553 6.807-6.99 7.193L24.467 99.967c-4.08.193-6.023-.39-8.16-3.113L3.3 79.94c-2.333-3.113-3.3-5.443-3.3-8.167V11.113c0-3.497 1.553-6.413 6.017-6.8z"
+                                            fill="#fff" />
+                                    </svg>
+                                    Conectar con Notion
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Ve a WhatsApp Web</h3>
+                        <p>Abre web.whatsapp.com y verás un nuevo botón ☑️ junto al campo donde escribes mensajes.</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="wa-input-mockup">
+                            <div class="input-placeholder">Escribe un mensaje</div>
+                            <div class="task-button-highlight">☑️</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Crea tu tarea</h3>
+                        <p>Completa el formulario con los detalles de la tarea y presiona "Crear tarea". ¡Listo!</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="task-created-mockup">
+                            <div class="success-icon">✓</div>
+                            <span>Tarea creada en Notion</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacy Section -->
+    <section id="privacy" class="privacy-section">
+        <div class="container">
+            <div class="privacy-content">
+                <div class="privacy-text">
+                    <span class="section-badge">Privacidad primero</span>
+                    <h2>Tus mensajes nunca salen de tu navegador</h2>
+                    <p>No tenemos servidores. No guardamos datos. La extensión procesa todo localmente y solo envía a
+                        Notion lo que tú confirmas explícitamente.</p>
+
+                    <ul class="privacy-list">
+                        <li>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="#22c55e">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                            Procesamiento 100% local
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="#22c55e">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                            Sin servidores intermediarios
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="#22c55e">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                            Token encriptado por Chrome
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="#22c55e">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                            Código abierto y auditable
+                        </li>
+                    </ul>
+                </div>
+                <div class="privacy-visual">
+                    <div class="security-diagram">
+                        <div class="diagram-node browser">
+                            <span class="node-icon">🌐</span>
+                            <span>Tu navegador</span>
+                        </div>
+                        <div class="diagram-arrow">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--accent)">
+                                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+                            </svg>
+                            <span>Conexión directa</span>
+                        </div>
+                        <div class="diagram-node notion">
+                            <span class="node-icon">📝</span>
+                            <span>API de Notion</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Empieza a capturar tareas hoy</h2>
+                <p>Gratis, open source y sin límites. Descarga la extensión y conecta tu Notion en menos de 2 minutos.
+                </p>
+
+                <div class="cta-buttons">
+                    <a href="https://github.com/jhomarTM/WhatsApp-to-Task-Creator" class="btn btn-primary btn-large"
+                        target="_blank">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path
+                                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                        </svg>
+                        Descargar desde GitHub
+                    </a>
+                </div>
+
+                <p class="cta-note">
+                    Compatible con Chrome 88+ · Requiere cuenta de Notion
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <svg class="logo-icon" viewBox="0 0 128 128" width="24" height="24">
+                        <defs>
+                            <linearGradient id="footer-logo-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00a884" />
+                                <stop offset="100%" style="stop-color:#06cf9c" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="64" cy="64" r="60" fill="url(#footer-logo-bg)" />
+                        <path d="M94 40L54 80L34 60" stroke="white" stroke-width="8" stroke-linecap="round"
+                            stroke-linejoin="round" fill="none" />
+                        <rect x="40" y="88" width="48" height="4" rx="2" fill="white" opacity="0.8" />
+                    </svg>
+                    <span>WA Task to Notion</span>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/jhomarTM/WhatsApp-to-Task-Creator" target="_blank">GitHub</a>
+                    <a href="https://github.com/jhomarTM/WhatsApp-to-Task-Creator/issues" target="_blank">Reportar
+                        bug</a>
+                    <a href="https://github.com/jhomarTM/WhatsApp-to-Task-Creator#readme"
+                        target="_blank">Documentación</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Hecho con ❤️ para productividad · MIT License</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const nav = document.querySelector('.nav');
+
+        mobileMenuBtn?.addEventListener('click', () => {
+            nav.classList.toggle('active');
+            mobileMenuBtn.classList.toggle('active');
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    nav.classList.remove('active');
+                    mobileMenuBtn.classList.remove('active');
+                }
+            });
+        });
+
+        // Header scroll effect
+        const header = document.querySelector('.header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+
+</html>

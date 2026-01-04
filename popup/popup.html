@@ -8,7 +8,6 @@
 </head>
 <body>
   <div class="popup-container">
-    <!-- Header -->
     <header class="popup-header">
       <div class="logo">
         <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -18,40 +17,76 @@
       </div>
     </header>
 
-    <!-- Content -->
     <main class="popup-content">
-      <div class="status-card">
-        <div class="status-icon">✅</div>
-        <div class="status-info">
-          <span class="status-label">Extensión activa</span>
-          <span class="status-text">Lista para capturar mensajes</span>
+      <!-- Estado: Cargando -->
+      <div id="state-loading" class="state active">
+        <div class="loading-spinner"></div>
+        <p>Verificando configuración...</p>
+      </div>
+
+      <!-- Estado: No configurado -->
+      <div id="state-setup" class="state">
+        <div class="setup-icon">⚙️</div>
+        <h3>Configura Notion</h3>
+        <p class="setup-desc">Ingresa tus credenciales para conectar con tu base de datos.</p>
+        
+        <form id="config-form">
+          <div class="form-group">
+            <label>Internal Integration Token</label>
+            <input type="password" id="notion-token" placeholder="ntn_xxxxx..." required>
+            <span class="hint">Obtén tu token en <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a></span>
+          </div>
+          
+          <div class="form-group">
+            <label>Database ID</label>
+            <input type="text" id="notion-database" placeholder="abc123def456..." required>
+            <span class="hint">32 caracteres de la URL de tu base de datos</span>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" id="btn-save">
+            💾 Guardar configuración
+          </button>
+        </form>
+      </div>
+
+      <!-- Estado: Configurado -->
+      <div id="state-ready" class="state">
+        <div class="status-card success">
+          <div class="status-icon">✅</div>
+          <div class="status-info">
+            <span class="status-label">Conectado a Notion</span>
+            <span class="status-text" id="db-name">Base de datos configurada</span>
+          </div>
         </div>
-      </div>
 
-      <div class="instructions">
-        <h3 class="instructions-title">Cómo usar</h3>
-        <ol class="instructions-list">
-          <li>Abre <strong>WhatsApp Web</strong></li>
-          <li>Pasa el mouse sobre cualquier mensaje</li>
-          <li>Haz clic en el botón <span class="badge">☑️</span> que aparece</li>
-          <li>Completa los detalles de la tarea</li>
-          <li>¡Listo! Tu tarea quedará guardada</li>
-        </ol>
-      </div>
+        <div class="instructions">
+          <h3>Cómo crear tareas</h3>
+          <ol>
+            <li>Abre <strong>WhatsApp Web</strong></li>
+            <li>Selecciona el texto de un mensaje</li>
+            <li>Click derecho → <strong>"Convertir a tarea"</strong></li>
+            <li>Completa los detalles en el sidebar</li>
+          </ol>
+        </div>
 
-      <div class="stats-card">
-        <div class="stat">
+        <div class="stats-card">
           <span class="stat-value" id="task-count">0</span>
-          <span class="stat-label">Tareas creadas</span>
+          <span class="stat-label">tareas creadas</span>
         </div>
+
+        <button class="btn btn-secondary" id="btn-test">
+          🔄 Probar conexión
+        </button>
+        
+        <button class="btn btn-danger" id="btn-reset">
+          Cambiar configuración
+        </button>
       </div>
 
-      <button id="btn-view-tasks" class="btn btn-secondary">
-        📋 Ver todas las tareas
-      </button>
+      <!-- Mensaje de estado -->
+      <div id="message" class="message"></div>
     </main>
 
-    <!-- Footer -->
     <footer class="popup-footer">
       <span class="version">v1.0.0</span>
     </footer>

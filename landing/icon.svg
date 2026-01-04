@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00a884"/>
+      <stop offset="100%" style="stop-color:#06cf9c"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#bg)"/>
+  
+  <!-- Checkmark icon -->
+  <path d="M94 40L54 80L34 60" 
+        stroke="white" 
+        stroke-width="8" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
+  
+  <!-- Notion-style lines -->
+  <rect x="40" y="88" width="48" height="4" rx="2" fill="white" opacity="0.8"/>
+</svg>
+
