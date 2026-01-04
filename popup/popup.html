@@ -27,24 +27,48 @@
       <!-- Estado: No configurado -->
       <div id="state-setup" class="state">
         <div class="setup-icon">⚙️</div>
-        <h3>Configura Notion</h3>
-        <p class="setup-desc">Ingresa tus credenciales para conectar con tu base de datos.</p>
+        <h3>Configuración inicial</h3>
+        <p class="setup-desc">Ingresa tus API Keys para conectar los servicios.</p>
         
         <form id="config-form">
-          <div class="form-group">
-            <label>Internal Integration Token</label>
-            <input type="password" id="notion-token" placeholder="ntn_xxxxx..." required>
-            <span class="hint">Obtén tu token en <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a></span>
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-icon">📋</span>
+              <span>Notion</span>
+            </div>
+            
+            <div class="form-group">
+              <label>Integration Token</label>
+              <input type="password" id="notion-token" placeholder="ntn_xxxxx..." required>
+              <span class="hint">
+                <a href="https://www.notion.so/my-integrations" target="_blank">Obtener token →</a>
+              </span>
+            </div>
+            
+            <div class="form-group">
+              <label>Database ID</label>
+              <input type="text" id="notion-database" placeholder="abc123def456..." required>
+              <span class="hint">32 caracteres de la URL de tu DB</span>
+            </div>
           </div>
-          
-          <div class="form-group">
-            <label>Database ID</label>
-            <input type="text" id="notion-database" placeholder="abc123def456..." required>
-            <span class="hint">32 caracteres de la URL de tu base de datos</span>
+
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-icon">🤖</span>
+              <span>OpenAI</span>
+            </div>
+            
+            <div class="form-group">
+              <label>API Key</label>
+              <input type="password" id="openai-key" placeholder="sk-proj-xxxxx...">
+              <span class="hint">
+                <a href="https://platform.openai.com/api-keys" target="_blank">Obtener API Key →</a>
+              </span>
+            </div>
           </div>
           
           <button type="submit" class="btn btn-primary" id="btn-save">
-            💾 Guardar configuración
+            💾 Guardar y conectar
           </button>
         </form>
       </div>
@@ -54,8 +78,21 @@
         <div class="status-card success">
           <div class="status-icon">✅</div>
           <div class="status-info">
-            <span class="status-label">Conectado a Notion</span>
-            <span class="status-text" id="db-name">Base de datos configurada</span>
+            <span class="status-label">Servicios conectados</span>
+            <span class="status-text" id="db-name">Listo para crear tareas</span>
+          </div>
+        </div>
+
+        <div class="services-status">
+          <div class="service-item">
+            <span class="service-icon">📋</span>
+            <span class="service-name">Notion</span>
+            <span class="service-status connected" id="notion-status">Conectado</span>
+          </div>
+          <div class="service-item">
+            <span class="service-icon">🤖</span>
+            <span class="service-name">OpenAI</span>
+            <span class="service-status" id="openai-status">No configurado</span>
           </div>
         </div>
 
@@ -63,9 +100,8 @@
           <h3>Cómo crear tareas</h3>
           <ol>
             <li>Abre <strong>WhatsApp Web</strong></li>
-            <li>Selecciona el texto de un mensaje</li>
+            <li>Selecciona texto de un mensaje</li>
             <li>Click derecho → <strong>"Convertir a tarea"</strong></li>
-            <li>Completa los detalles en el sidebar</li>
           </ol>
         </div>
 
@@ -78,8 +114,8 @@
           🔄 Probar conexión
         </button>
         
-        <button class="btn btn-danger" id="btn-reset">
-          Cambiar configuración
+        <button class="btn btn-logout" id="btn-logout">
+          🚪 Cerrar sesión
         </button>
       </div>
 

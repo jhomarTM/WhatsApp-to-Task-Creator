@@ -58,10 +58,14 @@ async function handleMessage(message) {
       return { tasks: result.tasks || [] };
     
     case 'SAVE_CONFIG':
-      await chrome.storage.local.set({ 
+      const configData = { 
         notionToken: message.token,
         notionDatabaseId: message.databaseId 
-      });
+      };
+      if (message.openaiKey) {
+        configData.openaiKey = message.openaiKey;
+      }
+      await chrome.storage.local.set(configData);
       return { success: true };
     
     case 'GET_CONFIG':
