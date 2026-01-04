@@ -29,6 +29,44 @@
     injectStyles();
     observeMessages();
     createSidebar();
+    listenForContextMenu();
+  }
+  
+  // Escuchar mensajes del background (menú contextual)
+  function listenForContextMenu() {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.type === 'OPEN_TASK_SIDEBAR') {
+        console.log('📋 Abriendo sidebar desde menú contextual');
+        
+        // Obtener info adicional del mensaje seleccionado
+        const selection = window.getSelection();
+        let messageInfo = { sender: '', time: '' };
+        
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const container = range.commonAncestorContainer;
+          const messageEl = container.nodeType === 1 
+            ? container.closest('[data-id]') 
+            : container.parentElement?.closest('[data-id]');
+          
+          if (messageEl) {
+            messageInfo = extractMessageInfo(messageEl);
+            messageEl.classList.add('wtn-selected');
+          }
+        }
+        
+        selectedMessage = {
+          text: message.text,
+          sender: messageInfo.sender,
+          time: messageInfo.time,
+          element: null
+        };
+        
+        openSidebar(selectedMessage);
+        sendResponse({ received: true });
+      }
+      return true;
+    });
   }
 
   // Cargar tareas del storage
