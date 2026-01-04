@@ -13,6 +13,9 @@
   let selectedDatabase = null;
   let databaseSchema = null;
   let isAuthenticated = false;
+  
+  // Modo demo (sin Notion)
+  const DEMO_MODE = true;
 
   // Selectores de WhatsApp Web (pueden cambiar con actualizaciones)
   const SELECTORS = {
@@ -43,6 +46,16 @@
 
   // Verificar autenticación
   async function checkAuth() {
+    if (DEMO_MODE) {
+      isAuthenticated = true;
+      databases = [
+        { id: 'demo-1', title: 'Tareas Personales', icon: '📋' },
+        { id: 'demo-2', title: 'Trabajo', icon: '💼' },
+        { id: 'demo-3', title: 'Proyectos', icon: '🚀' }
+      ];
+      return;
+    }
+    
     try {
       const response = await chrome.runtime.sendMessage({ type: 'CHECK_AUTH' });
       isAuthenticated = response.authenticated;
@@ -353,6 +366,25 @@
     // Estado de carga
     createBtn.classList.add('wtn-btn-loading');
     createBtn.disabled = true;
+
+    // MODO DEMO
+    if (DEMO_MODE) {
+      // Simular delay de red
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const db = databases.find(d => d.id === databaseId);
+      console.log('📋 DEMO - Tarea creada:', {
+        título: title,
+        descripción: description,
+        fecha: dueDate,
+        prioridad: priority,
+        baseDeDatos: db?.title
+      });
+      
+      showMessage(messageContainer, 'success', `✅ Tarea creada en "${db?.title}"`);
+      setTimeout(closeSidebar, 1500);
+      return;
+    }
 
     try {
       const response = await chrome.runtime.sendMessage({
