@@ -161,6 +161,72 @@ a {
     border-color: var(--border-light);
 }
 
+/* GitHub Button - Estilo especial */
+.btn-github {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d1117 100%);
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    color: #e6edf3;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-github::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(136, 87, 255, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.btn-github:hover::before {
+    opacity: 1;
+}
+
+.btn-github:hover {
+    border-color: #58a6ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(88, 166, 255, 0.15), 
+                0 0 0 1px rgba(88, 166, 255, 0.1);
+}
+
+.btn-github .github-logo {
+    flex-shrink: 0;
+}
+
+.btn-github .github-text {
+    position: relative;
+}
+
+.btn-github .github-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fbbf24;
+    position: relative;
+}
+
+.btn-github .github-stars svg {
+    fill: #fbbf24;
+}
+
+.btn-github:hover .github-stars {
+    background: rgba(251, 191, 36, 0.15);
+}
+
 .btn-large {
     padding: 14px 28px;
     font-size: 1rem;
