@@ -511,12 +511,12 @@ a {
     border-radius: 50%;
     background: var(--accent);
     border: none;
-    font-size: 1.2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    color: white;
 }
 
 .task-btn.pulse {
@@ -695,8 +695,15 @@ a {
 }
 
 .problem-icon {
-    font-size: 2.5rem;
     margin-bottom: 20px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: var(--accent-glow);
+    border-radius: 12px;
 }
 
 .problem-card h3 {
@@ -741,8 +748,15 @@ a {
 }
 
 .feature-icon {
-    font-size: 2rem;
     margin-bottom: 16px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--accent-glow);
+    border-radius: 10px;
 }
 
 .feature-card h3 {
@@ -865,8 +879,8 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
     box-shadow: 0 0 20px var(--accent-glow-strong);
+    color: white;
 }
 
 .task-created-mockup {
@@ -960,7 +974,9 @@ a {
 }
 
 .node-icon {
-    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .diagram-arrow {
