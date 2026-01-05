@@ -321,7 +321,7 @@
           ${ICONS.task}
           <span>Nueva Tarea</span>
         </h2>
-        <button class="wtn-close-btn" id="wtn-close">
+        <button class="wtn-close-btn" id="wtn-close" title="Cerrar">
           ${ICONS.close}
         </button>
       </header>
@@ -329,7 +329,6 @@
       <div class="wtn-sidebar-body">
         <div id="wtn-message-preview" class="wtn-message-preview"></div>
         
-        <!-- Botón de autocompletar con IA -->
         <button type="button" id="wtn-ai-autocomplete" class="wtn-ai-btn">
           ${ICONS.sparkle}
           <span>Autocompletar con IA</span>
@@ -341,22 +340,24 @@
           <div class="wtn-form-group">
             <label class="wtn-form-label required">
               ${ICONS.task}
-              Nombre de tarea
+              <span>Nombre de tarea</span>
             </label>
             <input type="text" id="wtn-title" class="wtn-form-input" placeholder="¿Qué hay que hacer?">
           </div>
           
           <div class="wtn-form-group">
             <label class="wtn-form-label">
-              📝 Descripción
+              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-3-7H9v2h6v-2zm0-4H9v2h6V9z"/></svg>
+              <span>Descripción</span>
             </label>
-            <textarea id="wtn-description" class="wtn-form-textarea" placeholder="Detalles adicionales..." rows="2"></textarea>
+            <textarea id="wtn-description" class="wtn-form-textarea" placeholder="Detalles adicionales..."></textarea>
           </div>
           
           <div class="wtn-form-row">
             <div class="wtn-form-group">
               <label class="wtn-form-label">
-                👤 Solicita
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>
+                <span>Solicita</span>
               </label>
               <input type="text" id="wtn-solicita" class="wtn-form-input" placeholder="¿Quién solicita?">
             </div>
@@ -364,7 +365,7 @@
             <div class="wtn-form-group">
               <label class="wtn-form-label">
                 ${ICONS.user}
-                Responsable
+                <span>Responsable</span>
               </label>
               <input type="text" id="wtn-responsable" class="wtn-form-input" placeholder="¿Quién lo hace?">
             </div>
@@ -373,7 +374,7 @@
           <div class="wtn-form-group">
             <label class="wtn-form-label">
               ${ICONS.calendar}
-              Fecha límite
+              <span>Fecha límite</span>
             </label>
             <input type="date" id="wtn-due-date" class="wtn-form-input">
           </div>
@@ -382,27 +383,28 @@
             <div class="wtn-form-group">
               <label class="wtn-form-label">
                 ${ICONS.flag}
-                Prioridad
+                <span>Prioridad</span>
               </label>
               <select id="wtn-priority" class="wtn-form-select">
                 <option value="">Sin prioridad</option>
-                <option value="Alta">🔴 Alta</option>
-                <option value="Media">🟡 Media</option>
-                <option value="Baja">🟢 Baja</option>
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
               </select>
             </div>
             
             <div class="wtn-form-group">
               <label class="wtn-form-label">
-                📁 Tipo de tarea
+                ${ICONS.tag}
+                <span>Tipo de tarea</span>
               </label>
               <select id="wtn-tipo-tarea" class="wtn-form-select">
                 <option value="">Sin tipo</option>
-                <option value="Solicitud de información">📋 Solicitud de información</option>
-                <option value="Solicitud de cambio">🔄 Solicitud de cambio</option>
-                <option value="Bug/Error">🐛 Bug/Error</option>
-                <option value="Mejora">✨ Mejora</option>
-                <option value="Otro">📌 Otro</option>
+                <option value="Solicitud de información">Solicitud de información</option>
+                <option value="Solicitud de cambio">Solicitud de cambio</option>
+                <option value="Bug/Error">Bug / Error</option>
+                <option value="Mejora">Mejora</option>
+                <option value="Otro">Otro</option>
               </select>
             </div>
           </div>
