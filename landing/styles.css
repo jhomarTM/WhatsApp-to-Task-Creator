@@ -918,6 +918,202 @@ a {
 }
 
 
+/* ========================================
+   AI SECTION
+   ======================================== */
+
+.ai-section {
+    padding: 100px 0;
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.ai-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.ai-badge {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%) !important;
+    color: #a78bfa !important;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.ai-text h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 20px 0;
+    line-height: 1.2;
+}
+
+.ai-text > p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    line-height: 1.7;
+}
+
+.ai-features-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ai-features-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.ai-features-list li svg {
+    flex-shrink: 0;
+    color: #a78bfa;
+}
+
+/* AI Demo Card */
+.ai-visual {
+    display: flex;
+    justify-content: center;
+}
+
+.ai-demo-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.ai-demo-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.ai-demo-body {
+    padding: 24px;
+}
+
+.ai-demo-message {
+    background: var(--bg-elevated);
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    border-left: 3px solid var(--accent);
+    margin-bottom: 20px;
+}
+
+.ai-demo-arrow {
+    display: flex;
+    justify-content: center;
+    color: #8b5cf6;
+    margin-bottom: 20px;
+    animation: bounce-arrow 1.5s ease-in-out infinite;
+}
+
+@keyframes bounce-arrow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+}
+
+.ai-demo-result {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ai-result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-elevated);
+    border-radius: 10px;
+}
+
+.ai-result-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ai-result-value {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.ai-result-value.priority-high {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+}
+
+/* AI Feature Icon */
+.feature-icon.ai-icon {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+    color: #a78bfa;
+}
+
+.feature-card.ai-feature {
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.feature-card.ai-feature:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
+}
+
+@media (max-width: 900px) {
+    .ai-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .ai-text {
+        text-align: center;
+    }
+    
+    .ai-features-list {
+        align-items: center;
+    }
+    
+    .ai-text h2 {
+        font-size: 1.8rem;
+    }
+}
+
 /* Features Section */
 .features-section {
     padding: 100px 0;
