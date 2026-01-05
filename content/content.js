@@ -333,7 +333,7 @@
           <div class="wtn-form-group">
             <label class="wtn-form-label required">
               ${ICONS.task}
-              Título de la tarea
+              Nombre de tarea
             </label>
             <input type="text" id="wtn-title" class="wtn-form-input" placeholder="¿Qué hay que hacer?">
           </div>
@@ -342,24 +342,32 @@
             <label class="wtn-form-label">
               📝 Descripción
             </label>
-            <textarea id="wtn-description" class="wtn-form-textarea" placeholder="Detalles adicionales..." rows="3"></textarea>
+            <textarea id="wtn-description" class="wtn-form-textarea" placeholder="Detalles adicionales..." rows="2"></textarea>
           </div>
           
           <div class="wtn-form-row">
             <div class="wtn-form-group">
               <label class="wtn-form-label">
-                ${ICONS.calendar}
-                Fecha límite
+                👤 Solicita
               </label>
-              <input type="date" id="wtn-due-date" class="wtn-form-input">
+              <input type="text" id="wtn-solicita" class="wtn-form-input" placeholder="¿Quién solicita?">
             </div>
             
             <div class="wtn-form-group">
               <label class="wtn-form-label">
-                🕐 Hora
+                ${ICONS.user}
+                Responsable
               </label>
-              <input type="time" id="wtn-due-time" class="wtn-form-input">
+              <input type="text" id="wtn-responsable" class="wtn-form-input" placeholder="¿Quién lo hace?">
             </div>
+          </div>
+          
+          <div class="wtn-form-group">
+            <label class="wtn-form-label">
+              ${ICONS.calendar}
+              Fecha límite
+            </label>
+            <input type="date" id="wtn-due-date" class="wtn-form-input">
           </div>
           
           <div class="wtn-form-row">
@@ -370,40 +378,25 @@
               </label>
               <select id="wtn-priority" class="wtn-form-select">
                 <option value="">Sin prioridad</option>
-                <option value="alta">🔴 Alta</option>
-                <option value="media">🟡 Media</option>
-                <option value="baja">🟢 Baja</option>
+                <option value="Alta">🔴 Alta</option>
+                <option value="Media">🟡 Media</option>
+                <option value="Baja">🟢 Baja</option>
               </select>
             </div>
             
             <div class="wtn-form-group">
               <label class="wtn-form-label">
-                📁 Proyecto
+                📁 Tipo de tarea
               </label>
-              <select id="wtn-project" class="wtn-form-select">
-                <option value="">Sin proyecto</option>
-                <option value="personal">Personal</option>
-                <option value="trabajo">Trabajo</option>
-                <option value="otros">Otros</option>
+              <select id="wtn-tipo-tarea" class="wtn-form-select">
+                <option value="">Sin tipo</option>
+                <option value="Solicitud de información">📋 Solicitud de información</option>
+                <option value="Solicitud de cambio">🔄 Solicitud de cambio</option>
+                <option value="Bug/Error">🐛 Bug/Error</option>
+                <option value="Mejora">✨ Mejora</option>
+                <option value="Otro">📌 Otro</option>
               </select>
             </div>
-          </div>
-          
-          <div class="wtn-form-group">
-            <label class="wtn-form-label">
-              ${ICONS.user}
-              Asignar a
-            </label>
-            <input type="text" id="wtn-assignee" class="wtn-form-input" placeholder="Nombre del responsable">
-          </div>
-          
-          <div class="wtn-form-group">
-            <label class="wtn-form-label">
-              ${ICONS.tag}
-              Etiquetas
-            </label>
-            <input type="text" id="wtn-tags" class="wtn-form-input" placeholder="trabajo, urgente, cliente">
-            <span class="wtn-form-hint">Separadas por comas</span>
           </div>
         </form>
       </div>
@@ -515,17 +508,15 @@
     // Obtener valores
     const title = document.getElementById('wtn-title')?.value?.trim();
     const description = document.getElementById('wtn-description')?.value?.trim();
+    const solicita = document.getElementById('wtn-solicita')?.value?.trim();
+    const responsable = document.getElementById('wtn-responsable')?.value?.trim();
     const dueDate = document.getElementById('wtn-due-date')?.value;
-    const dueTime = document.getElementById('wtn-due-time')?.value;
     const priority = document.getElementById('wtn-priority')?.value;
-    const project = document.getElementById('wtn-project')?.value;
-    const assignee = document.getElementById('wtn-assignee')?.value?.trim();
-    const tagsInput = document.getElementById('wtn-tags')?.value?.trim();
-    const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(Boolean) : [];
+    const tipoTarea = document.getElementById('wtn-tipo-tarea')?.value;
 
     // Validar
     if (!title) {
-      showMessage(messageContainer, 'error', 'El título es requerido');
+      showMessage(messageContainer, 'error', 'El nombre de la tarea es requerido');
       document.getElementById('wtn-title')?.focus();
       return;
     }
@@ -539,12 +530,11 @@
       id: Date.now().toString(),
       title,
       description,
+      solicita: solicita || null,
+      responsable: responsable || null,
       dueDate: dueDate || null,
-      dueTime: dueTime || null,
       priority: priority || null,
-      taskType: project || null, // Mapear proyecto a tipo de tarea
-      assignee: assignee || null,
-      tags,
+      tipoTarea: tipoTarea || null,
       sourceMessage: selectedMessage ? {
         text: selectedMessage.text,
         sender: selectedMessage.sender,

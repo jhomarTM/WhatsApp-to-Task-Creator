@@ -10,12 +10,12 @@ const NOTION_API_VERSION = '2022-06-28';
 const FIELD_MAPPING = {
   title: 'Nombre de tarea',
   description: 'Descripción',
+  solicita: 'Solicita',
+  responsable: 'Responsable',
   dueDate: 'Fecha límite',
   priority: 'Prioridad',
-  assignee: 'Responsable',
-  status: 'Estado',
-  taskType: 'Tipo de tarea',
-  effort: 'Nivel de esfuerzo'
+  estado: 'Estado',
+  tipoTarea: 'Tipo de tarea'
 };
 
 // ===== INSTALACIÓN =====
@@ -127,31 +127,31 @@ async function createNotionTask(task) {
       properties[FIELD_MAPPING.dueDate] = { date: dateValue };
     }
     
-    // Prioridad
-    if (task.priority) {
-      const priorityMap = { 'alta': 'Alta', 'media': 'Media', 'baja': 'Baja' };
-      properties[FIELD_MAPPING.priority] = {
-        select: { name: priorityMap[task.priority] || task.priority }
+    // Solicita
+    if (task.solicita) {
+      properties[FIELD_MAPPING.solicita] = {
+        rich_text: [{ text: { content: task.solicita } }]
       };
     }
     
     // Responsable
-    if (task.assignee) {
-      properties[FIELD_MAPPING.assignee] = {
-        rich_text: [{ text: { content: task.assignee } }]
+    if (task.responsable) {
+      properties[FIELD_MAPPING.responsable] = {
+        rich_text: [{ text: { content: task.responsable } }]
       };
     }
     
-    // Estado inicial - comentado porque depende de las opciones de tu DB
-    // Si quieres usar estado, descomenta y pon el nombre exacto de tu opción
-    // properties[FIELD_MAPPING.status] = {
-    //   status: { name: 'Por hacer' }
-    // };
+    // Prioridad
+    if (task.priority) {
+      properties[FIELD_MAPPING.priority] = {
+        select: { name: task.priority }
+      };
+    }
     
     // Tipo de tarea
-    if (task.taskType) {
-      properties[FIELD_MAPPING.taskType] = {
-        select: { name: task.taskType }
+    if (task.tipoTarea) {
+      properties[FIELD_MAPPING.tipoTarea] = {
+        select: { name: task.tipoTarea }
       };
     }
 
