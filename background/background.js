@@ -82,8 +82,49 @@ async function handleMessage(message) {
     case 'AI_AUTOCOMPLETE':
       return await aiAutocomplete(message.messageText, message.sender);
     
+    case 'GET_NOTION_USERS':
+      return await getNotionUsers();
+    
     default:
       return { success: false, error: 'Tipo de mensaje desconocido' };
+  }
+}
+
+// ===== OBTENER USUARIOS DE NOTION =====
+async function getNotionUsers() {
+  try {
+    const config = await getNotionConfig();
+    
+    const response = await fetch('https://api.notion.com/v1/users', {
+      headers: {
+        'Authorization': `Bearer ${config.token}`,
+        'Notion-Version': NOTION_API_VERSION
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || `Error ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Filtrar solo personas (no bots)
+    const users = data.results
+      .filter(user => user.type === 'person')
+      .map(user => ({
+        id: user.id,
+        name: user.name,
+        email: user.person?.email || '',
+        avatar: user.avatar_url
+      }));
+    
+    console.log('👥 Usuarios de Notion:', users);
+    return { success: true, users };
+    
+  } catch (error) {
+    console.error('❌ Error obteniendo usuarios:', error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -251,19 +292,19 @@ async function createNotionTask(task) {
   try {
     const properties = {};
     
-    // Título
+    // Título (title)
     properties[FIELD_MAPPING.title] = {
       title: [{ text: { content: task.title || 'Sin título' } }]
     };
     
-    // Descripción
+    // Descripción (rich_text)
     if (task.description) {
       properties[FIELD_MAPPING.description] = {
         rich_text: [{ text: { content: task.description } }]
       };
     }
     
-    // Fecha límite
+    // Fecha límite (date)
     if (task.dueDate) {
       const dateValue = { start: task.dueDate };
       if (task.dueTime) {
@@ -272,31 +313,31 @@ async function createNotionTask(task) {
       properties[FIELD_MAPPING.dueDate] = { date: dateValue };
     }
     
-    // Solicita
-    if (task.solicita) {
+    // Solicita (people) - Usar ID de usuario de Notion
+    if (task.solicitaId) {
       properties[FIELD_MAPPING.solicita] = {
-        rich_text: [{ text: { content: task.solicita } }]
+        people: [{ id: task.solicitaId }]
       };
     }
     
-    // Responsable
-    if (task.responsable) {
+    // Responsable (people) - Usar ID de usuario de Notion
+    if (task.responsableId) {
       properties[FIELD_MAPPING.responsable] = {
-        rich_text: [{ text: { content: task.responsable } }]
+        people: [{ id: task.responsableId }]
       };
     }
     
-    // Prioridad
+    // Prioridad (select)
     if (task.priority) {
       properties[FIELD_MAPPING.priority] = {
         select: { name: task.priority }
       };
     }
     
-    // Tipo de tarea
+    // Tipo de tarea (multi_select)
     if (task.tipoTarea) {
       properties[FIELD_MAPPING.tipoTarea] = {
-        select: { name: task.tipoTarea }
+        multi_select: [{ name: task.tipoTarea }]
       };
     }
 

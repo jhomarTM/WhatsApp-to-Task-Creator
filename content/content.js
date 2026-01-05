@@ -10,6 +10,7 @@
   let sidebarOpen = false;
   let selectedMessage = null;
   let tasks = []; // Almacenamiento local de tareas
+  let notionUsers = []; // Usuarios de Notion
 
   // Iconos SVG
   const ICONS = {
@@ -95,6 +96,56 @@
     } catch (e) {
       tasks = [];
     }
+  }
+
+  // Cargar usuarios de Notion
+  async function loadNotionUsers() {
+    try {
+      const response = await chrome.runtime.sendMessage({ type: 'GET_NOTION_USERS' });
+      if (response.success && response.users) {
+        notionUsers = response.users;
+        updateUserSelects();
+        console.log('👥 Usuarios cargados:', notionUsers.length);
+      }
+    } catch (e) {
+      console.error('Error cargando usuarios:', e);
+    }
+  }
+
+  // Actualizar los selects de usuarios
+  function updateUserSelects() {
+    const solicitaSelect = document.getElementById('wtn-solicita');
+    const responsableSelect = document.getElementById('wtn-responsable');
+    
+    if (!solicitaSelect || !responsableSelect) return;
+    
+    // Generar opciones
+    const optionsHTML = notionUsers.map(user => 
+      `<option value="${user.id}">${user.name}</option>`
+    ).join('');
+    
+    // Actualizar ambos selects
+    solicitaSelect.innerHTML = `<option value="">Seleccionar persona...</option>${optionsHTML}`;
+    responsableSelect.innerHTML = `<option value="">Seleccionar persona...</option>${optionsHTML}`;
+  }
+
+  // Buscar usuario por nombre (match parcial)
+  function findUserByName(name) {
+    if (!name || !notionUsers.length) return null;
+    
+    const normalizedSearch = name.toLowerCase().trim();
+    
+    // Buscar coincidencia exacta primero
+    let found = notionUsers.find(u => u.name.toLowerCase() === normalizedSearch);
+    if (found) return found;
+    
+    // Buscar coincidencia parcial
+    found = notionUsers.find(u => 
+      u.name.toLowerCase().includes(normalizedSearch) ||
+      normalizedSearch.includes(u.name.toLowerCase().split(' ')[0]) // Match por primer nombre
+    );
+    
+    return found || null;
   }
 
   // Guardar tareas
@@ -359,7 +410,9 @@
                 <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>
                 <span>Solicita</span>
               </label>
-              <input type="text" id="wtn-solicita" class="wtn-form-input" placeholder="¿Quién solicita?">
+              <select id="wtn-solicita" class="wtn-form-select">
+                <option value="">Seleccionar persona...</option>
+              </select>
             </div>
             
             <div class="wtn-form-group">
@@ -367,7 +420,9 @@
                 ${ICONS.user}
                 <span>Responsable</span>
               </label>
-              <input type="text" id="wtn-responsable" class="wtn-form-input" placeholder="¿Quién lo hace?">
+              <select id="wtn-responsable" class="wtn-form-select">
+                <option value="">Seleccionar persona...</option>
+              </select>
             </div>
           </div>
           
@@ -471,12 +526,23 @@
         if (s.description) {
           document.getElementById('wtn-description').value = s.description;
         }
-        if (s.solicita) {
-          document.getElementById('wtn-solicita').value = s.solicita;
+        
+        // Para Solicita, intentar hacer match con usuarios de Notion
+        if (s.solicita && notionUsers.length > 0) {
+          const matchedUser = findUserByName(s.solicita);
+          if (matchedUser) {
+            document.getElementById('wtn-solicita').value = matchedUser.id;
+          }
         }
-        if (s.responsable) {
-          document.getElementById('wtn-responsable').value = s.responsable;
+        
+        // Para Responsable, intentar hacer match
+        if (s.responsable && notionUsers.length > 0) {
+          const matchedUser = findUserByName(s.responsable);
+          if (matchedUser) {
+            document.getElementById('wtn-responsable').value = matchedUser.id;
+          }
         }
+        
         if (s.dueDate) {
           document.getElementById('wtn-due-date').value = s.dueDate;
         }
@@ -557,6 +623,9 @@
     
     console.log('📋 Sidebar abierto correctamente');
     
+    // Cargar usuarios de Notion
+    loadNotionUsers();
+    
     // Focus en título
     setTimeout(() => titleInput?.focus(), 300);
   }
@@ -592,8 +661,8 @@
     // Obtener valores
     const title = document.getElementById('wtn-title')?.value?.trim();
     const description = document.getElementById('wtn-description')?.value?.trim();
-    const solicita = document.getElementById('wtn-solicita')?.value?.trim();
-    const responsable = document.getElementById('wtn-responsable')?.value?.trim();
+    const solicitaId = document.getElementById('wtn-solicita')?.value; // ID de usuario
+    const responsableId = document.getElementById('wtn-responsable')?.value; // ID de usuario
     const dueDate = document.getElementById('wtn-due-date')?.value;
     const priority = document.getElementById('wtn-priority')?.value;
     const tipoTarea = document.getElementById('wtn-tipo-tarea')?.value;
@@ -614,8 +683,8 @@
       id: Date.now().toString(),
       title,
       description,
-      solicita: solicita || null,
-      responsable: responsable || null,
+      solicitaId: solicitaId || null, // ID de usuario de Notion
+      responsableId: responsableId || null, // ID de usuario de Notion
       dueDate: dueDate || null,
       priority: priority || null,
       tipoTarea: tipoTarea || null,
