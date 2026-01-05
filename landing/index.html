@@ -75,10 +75,28 @@
                 <span class="gradient-text">tareas en </span>
                 <span class="notion-brand">
                     <svg class="notion-logo-inline" viewBox="0 0 100 100" width="42" height="42">
-                        <path d="M6.017 4.313l55.333-4.087c6.797-.583 8.543-.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277-1.553 6.807-6.99 7.193L24.467 99.967c-4.08.193-6.023-.39-8.16-3.113L3.3 79.94c-2.333-3.113-3.3-5.443-3.3-8.167V11.113c0-3.497 1.553-6.413 6.017-6.8z" fill="#fff"/>
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M61.35.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257-3.89c5.437-.387 6.99-2.917 6.99-7.193V20.64c0-2.21-.873-2.847-3.443-4.733L74.167 3.143C69.873-.164 68.127-.557 61.35.227z" fill="#fff"/>
-                        <path d="M25.723 14.913c-1.553.147-1.91.18-2.957-.643l-8.413-6.17c-1.163-.937-.583-2.137 2.527-2.333L68.493 2.66c4.277-.39 6.507 1.163 8.357 2.527l8.503 6.187c.583.39 1.167 1.363.19 1.553l-59.82 1.987zm-3.69 80.87V30.82c0-2.527.78-3.687 3.107-3.883l58.213-3.307c2.14-.193 3.11.973 3.11 3.5v64.193c0 2.53-.39 4.67-3.883 4.863l-55.917 3.31c-3.493.193-4.63-1.363-4.63-3.713z" fill="#000"/>
-                        <path d="M71.24 35.67c.39 1.75 0 3.5-1.75 3.7l-2.917.557v47.78c-2.527 1.36-4.853 2.137-6.797 2.137-3.11 0-3.883-.973-6.21-3.887L35.587 52.537v32.293l6.02 1.363s0 3.5-4.857 3.5l-13.393.777c-.39-.78 0-2.723 1.357-3.11l3.497-.973V41.5l-4.857-.39c-.39-1.75.583-4.277 3.3-4.473l14.363-.973 19.443 29.76V38.2l-5.053-.583c-.39-2.143 1.163-3.693 3.107-3.887l13.527-.86z" fill="#000"/>
+                        <!-- Notion 3D Cube Logo -->
+                        <defs>
+                            <linearGradient id="cube-shadow" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#e8e8e8"/>
+                                <stop offset="100%" style="stop-color:#d0d0d0"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Cube base/shadow -->
+                        <rect x="15" y="15" width="70" height="70" rx="16" fill="url(#cube-shadow)"/>
+                        <!-- Cube body -->
+                        <g transform="translate(50, 50)">
+                            <!-- Back face -->
+                            <path d="M-18 -22 L18 -22 L18 18 L-18 18 Z" fill="#1a1a1a" transform="translate(4, -4)"/>
+                            <!-- Top face -->
+                            <path d="M-18 -22 L18 -22 L22 -26 L-14 -26 Z" fill="#3a3a3a"/>
+                            <!-- Right face -->
+                            <path d="M18 -22 L22 -26 L22 14 L18 18 Z" fill="#2a2a2a"/>
+                            <!-- Front face -->
+                            <rect x="-18" y="-22" width="36" height="40" rx="2" fill="#fff" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- Letter N -->
+                            <text x="0" y="8" font-family="Georgia, serif" font-size="32" font-weight="bold" fill="#1a1a1a" text-anchor="middle">N</text>
+                        </g>
                     </svg>
                     <span class="gradient-text">Notion</span>
                 </span>
@@ -164,13 +182,15 @@
                         <div class="sidebar-header">
                             <span>Nueva Tarea</span>
                             <span class="notion-logo">
-                                <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
-                                    <path
-                                        d="M6.017 4.313l55.333-4.087c6.797-.583 8.543-.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277-1.553 6.807-6.99 7.193L24.467 99.967c-4.08.193-6.023-.39-8.16-3.113L3.3 79.94c-2.333-3.113-3.3-5.443-3.3-8.167V11.113c0-3.497 1.553-6.413 6.017-6.8z"
-                                        fill="#fff" />
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M61.35.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257-3.89c5.437-.387 6.99-2.917 6.99-7.193V20.64c0-2.21-.873-2.847-3.443-4.733L74.167 3.143C69.873-.164 68.127-.557 61.35.227zm1.19 14.887c-1.553.147-1.91.18-2.957-.643L48.17 5.16c-1.163-.937-.583-2.137 2.527-2.333l51.613-3.113c4.277-.39 6.507 1.163 8.357 2.527L74.17 9.63c.583.39 1.167 1.363.19 1.553l-11.82 3.93zm-3.69 80.87V30.82c0-2.527.78-3.687 3.107-3.883l58.213-3.307c2.14-.193 3.11.973 3.11 3.5v64.193c0 2.53-.39 4.67-3.883 4.863l-55.917 3.31c-3.493.193-5.147-.973-4.63-4.013zM85.24 35.67c.39 1.75 0 3.5-1.75 3.7l-2.917.557v47.78c-2.527 1.36-4.853 2.137-6.797 2.137-3.11 0-3.883-.973-6.21-3.887L49.587 52.537v32.293l6.02 1.363s0 3.5-4.857 3.5l-13.393.777c-.39-.78 0-2.723 1.357-3.11l3.497-.973V41.5l-4.857-.39c-.39-1.75.583-4.277 3.3-4.473l14.363-.973 19.443 29.76V38.2l-5.053-.583c-.39-2.143 1.163-3.693 3.107-3.887l13.527-.86z"
-                                        fill="#000" />
+                                <svg width="18" height="18" viewBox="0 0 100 100">
+                                    <!-- Mini Notion 3D Cube -->
+                                    <g transform="translate(50, 50)">
+                                        <path d="M-20 -24 L20 -24 L20 20 L-20 20 Z" fill="#2a2a2a" transform="translate(4, -4)"/>
+                                        <path d="M-20 -24 L20 -24 L24 -28 L-16 -28 Z" fill="#4a4a4a"/>
+                                        <path d="M20 -24 L24 -28 L24 16 L20 20 Z" fill="#3a3a3a"/>
+                                        <rect x="-20" y="-24" width="40" height="44" rx="2" fill="#fff" stroke="#1a1a1a" stroke-width="3"/>
+                                        <text x="0" y="10" font-family="Georgia, serif" font-size="34" font-weight="bold" fill="#1a1a1a" text-anchor="middle">N</text>
+                                    </g>
                                 </svg>
                             </span>
                         </div>
@@ -334,10 +354,12 @@
                             <div class="popup-header">Configuración</div>
                             <div class="popup-body">
                                 <div class="notion-connect-btn">
-                                    <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-                                        <path
-                                            d="M6.017 4.313l55.333-4.087c6.797-.583 8.543-.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277-1.553 6.807-6.99 7.193L24.467 99.967c-4.08.193-6.023-.39-8.16-3.113L3.3 79.94c-2.333-3.113-3.3-5.443-3.3-8.167V11.113c0-3.497 1.553-6.413 6.017-6.8z"
-                                            fill="#fff" />
+                                    <svg width="20" height="20" viewBox="0 0 100 100">
+                                        <g transform="translate(50, 50)">
+                                            <path d="M-20 -24 L20 -24 L20 20 L-20 20 Z" fill="#4a4a4a" transform="translate(3, -3)"/>
+                                            <rect x="-20" y="-24" width="40" height="44" rx="2" fill="#fff" stroke="#1a1a1a" stroke-width="3"/>
+                                            <text x="0" y="10" font-family="Georgia, serif" font-size="34" font-weight="bold" fill="#1a1a1a" text-anchor="middle">N</text>
+                                        </g>
                                     </svg>
                                     Conectar con Notion
                                 </div>
@@ -440,8 +462,12 @@
                         </div>
                         <div class="diagram-node notion">
                             <span class="node-icon">
-                                <svg viewBox="0 0 100 100" width="24" height="24" fill="currentColor">
-                                    <path d="M6.017 4.313l55.333-4.087c6.797-.583 8.543-.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277-1.553 6.807-6.99 7.193L24.467 99.967c-4.08.193-6.023-.39-8.16-3.113L3.3 79.94c-2.333-3.113-3.3-5.443-3.3-8.167V11.113c0-3.497 1.553-6.413 6.017-6.8z"/>
+                                <svg viewBox="0 0 100 100" width="24" height="24">
+                                    <g transform="translate(50, 50)">
+                                        <path d="M-20 -24 L20 -24 L20 20 L-20 20 Z" fill="#4a4a4a" transform="translate(4, -4)"/>
+                                        <rect x="-20" y="-24" width="40" height="44" rx="2" fill="#fff" stroke="#1a1a1a" stroke-width="3"/>
+                                        <text x="0" y="10" font-family="Georgia, serif" font-size="34" font-weight="bold" fill="#1a1a1a" text-anchor="middle">N</text>
+                                    </g>
                                 </svg>
                             </span>
                             <span>API de Notion</span>
