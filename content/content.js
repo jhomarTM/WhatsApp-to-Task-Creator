@@ -19,7 +19,9 @@
     calendar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>`,
     user: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`,
     flag: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>`,
-    tag: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>`
+    tag: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>`,
+    ai: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 10.5h-1.5V9h1c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-1V5.5c0-.28-.22-.5-.5-.5h-1.5V3.5c0-.28-.22-.5-.5-.5s-.5.22-.5.5V5h-1V3.5c0-.28-.22-.5-.5-.5s-.5.22-.5.5V5h-1V3.5c0-.28-.22-.5-.5-.5s-.5.22-.5.5V5H9V3.5c0-.28-.22-.5-.5-.5s-.5.22-.5.5V5H6.5c-.28 0-.5.22-.5.5V7h-1c-.28 0-.5.22-.5.5v1c0 .28.22.5.5.5h1v1.5H4.5c-.28 0-.5.22-.5.5v1c0 .28.22.5.5.5H6v1.5H5c-.28 0-.5.22-.5.5v1c0 .28.22.5.5.5h1v1.5c0 .28.22.5.5.5H8v1.5c0 .28.22.5.5.5s.5-.22.5-.5V19h1v1.5c0 .28.22.5.5.5s.5-.22.5-.5V19h1v1.5c0 .28.22.5.5.5s.5-.22.5-.5V19h1v1.5c0 .28.22.5.5.5s.5-.22.5-.5V19h1.5c.28 0 .5-.22.5-.5V17h1c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-1v-1.5h1.5c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>`,
+    sparkle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5L12 2z"/></svg>`
   };
 
   // Inicializar
@@ -327,6 +329,12 @@
       <div class="wtn-sidebar-body">
         <div id="wtn-message-preview" class="wtn-message-preview"></div>
         
+        <!-- Botón de autocompletar con IA -->
+        <button type="button" id="wtn-ai-autocomplete" class="wtn-ai-btn">
+          ${ICONS.sparkle}
+          <span>Autocompletar con IA</span>
+        </button>
+        
         <div id="wtn-message-container"></div>
         
         <form id="wtn-task-form">
@@ -418,11 +426,85 @@
     document.getElementById('wtn-close')?.addEventListener('click', closeSidebar);
     document.getElementById('wtn-cancel')?.addEventListener('click', closeSidebar);
     document.getElementById('wtn-task-form')?.addEventListener('submit', handleCreateTask);
+    document.getElementById('wtn-ai-autocomplete')?.addEventListener('click', handleAIAutocomplete);
     
     // Cerrar con Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && sidebarOpen) closeSidebar();
     });
+  }
+
+  // Autocompletar con IA
+  async function handleAIAutocomplete() {
+    const aiBtn = document.getElementById('wtn-ai-autocomplete');
+    const messageContainer = document.getElementById('wtn-message-container');
+    
+    if (!selectedMessage?.text) {
+      showMessage(messageContainer, 'error', 'No hay mensaje seleccionado');
+      return;
+    }
+    
+    // Estado de carga
+    aiBtn.classList.add('wtn-ai-btn-loading');
+    aiBtn.disabled = true;
+    aiBtn.innerHTML = `
+      <svg class="wtn-spinner" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
+      <span>Analizando...</span>
+    `;
+    
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: 'AI_AUTOCOMPLETE',
+        messageText: selectedMessage.text,
+        sender: selectedMessage.sender
+      });
+      
+      if (response.success && response.suggestions) {
+        const s = response.suggestions;
+        
+        // Rellenar campos con sugerencias
+        if (s.title) {
+          document.getElementById('wtn-title').value = s.title;
+        }
+        if (s.description) {
+          document.getElementById('wtn-description').value = s.description;
+        }
+        if (s.solicita) {
+          document.getElementById('wtn-solicita').value = s.solicita;
+        }
+        if (s.responsable) {
+          document.getElementById('wtn-responsable').value = s.responsable;
+        }
+        if (s.dueDate) {
+          document.getElementById('wtn-due-date').value = s.dueDate;
+        }
+        if (s.priority) {
+          document.getElementById('wtn-priority').value = s.priority;
+        }
+        if (s.tipoTarea) {
+          document.getElementById('wtn-tipo-tarea').value = s.tipoTarea;
+        }
+        
+        showMessage(messageContainer, 'success', 'Campos completados con IA');
+        
+        // Limpiar mensaje después de 2s
+        setTimeout(() => {
+          messageContainer.innerHTML = '';
+        }, 2000);
+        
+      } else {
+        throw new Error(response.error || 'Error al procesar con IA');
+      }
+      
+    } catch (error) {
+      console.error('❌ Error IA:', error);
+      showMessage(messageContainer, 'error', error.message);
+    } finally {
+      // Restaurar botón
+      aiBtn.classList.remove('wtn-ai-btn-loading');
+      aiBtn.disabled = false;
+      aiBtn.innerHTML = `${ICONS.sparkle}<span>Autocompletar con IA</span>`;
+    }
   }
 
   // Abrir sidebar

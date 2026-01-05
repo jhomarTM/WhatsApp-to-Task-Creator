@@ -79,8 +79,91 @@ async function handleMessage(message) {
     case 'TEST_CONNECTION':
       return await testNotionConnection();
     
+    case 'AI_AUTOCOMPLETE':
+      return await aiAutocomplete(message.messageText, message.sender);
+    
     default:
       return { success: false, error: 'Tipo de mensaje desconocido' };
+  }
+}
+
+// ===== OPENAI AUTOCOMPLETE =====
+async function aiAutocomplete(messageText, sender) {
+  const config = await chrome.storage.local.get(['openaiKey']);
+  
+  if (!config.openaiKey) {
+    throw new Error('OpenAI no configurado. Ve al popup de la extensión para agregar tu API Key.');
+  }
+
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  
+  const prompt = `Analiza este mensaje de WhatsApp y extrae información para crear una tarea.
+
+MENSAJE: "${messageText}"
+REMITENTE: ${sender || 'Desconocido'}
+FECHA ACTUAL: ${todayStr}
+
+Responde SOLO con un JSON válido (sin markdown, sin explicaciones) con estos campos:
+{
+  "title": "título corto y claro de la tarea (máx 80 caracteres)",
+  "description": "descripción detallada si hay más contexto, o vacío",
+  "solicita": "nombre de quien solicita (usar el remitente si aplica)",
+  "responsable": "nombre del responsable si se menciona, o vacío",
+  "dueDate": "fecha en formato YYYY-MM-DD si se menciona (ej: 'para el viernes' = próximo viernes), o null",
+  "priority": "Alta, Media o Baja según urgencia del mensaje",
+  "tipoTarea": "uno de: Solicitud de información, Solicitud de cambio, Bug/Error, Mejora, Otro"
+}
+
+Reglas:
+- Si dice "urgente", "ASAP", "para hoy" → prioridad Alta
+- Si menciona fechas relativas como "mañana", "próximo lunes", calcula la fecha real
+- El título debe ser accionable (empezar con verbo si es posible)
+- Si no hay información clara para un campo, usa null o string vacío`;
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${config.openaiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'Eres un asistente que extrae información de mensajes para crear tareas. Responde SOLO con JSON válido, sin markdown ni explicaciones.'
+          },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 500
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || `Error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content?.trim();
+    
+    // Parsear JSON (limpiar si viene con markdown)
+    let jsonContent = content;
+    if (content.startsWith('```')) {
+      jsonContent = content.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+    }
+    
+    const suggestions = JSON.parse(jsonContent);
+    console.log('🤖 Sugerencias de IA:', suggestions);
+    
+    return { success: true, suggestions };
+    
+  } catch (error) {
+    console.error('❌ Error de OpenAI:', error);
+    throw error;
   }
 }
 
