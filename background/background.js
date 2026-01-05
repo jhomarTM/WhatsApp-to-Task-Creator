@@ -103,28 +103,78 @@ async function aiAutocomplete(messageText, sender) {
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
   
-  const prompt = `Analiza este mensaje de WhatsApp y extrae información para crear una tarea.
+  // Calcular fechas relativas
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  
+  // Obtener el próximo día de la semana
+  const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const currentDay = today.getDay();
+  
+  const prompt = `Eres un asistente experto en gestión de tareas. Analiza este mensaje de WhatsApp y extrae TODA la información relevante para crear una tarea completa y bien estructurada.
 
-MENSAJE: "${messageText}"
-REMITENTE: ${sender || 'Desconocido'}
-FECHA ACTUAL: ${todayStr}
+MENSAJE ORIGINAL:
+"${messageText}"
 
-Responde SOLO con un JSON válido (sin markdown, sin explicaciones) con estos campos:
+CONTEXTO:
+- Remitente: ${sender || 'Desconocido'}
+- Fecha actual: ${todayStr} (${daysOfWeek[currentDay]})
+- Mañana sería: ${tomorrow.toISOString().split('T')[0]}
+
+INSTRUCCIONES DETALLADAS:
+
+1. **TÍTULO** (obligatorio): 
+   - Debe ser claro, específico y accionable
+   - Empezar con un verbo en infinitivo cuando sea posible
+   - Incluir el QUÉ se debe hacer
+   - Máximo 100 caracteres pero ser descriptivo
+
+2. **DESCRIPCIÓN** (importante):
+   - Incluir TODOS los detalles del mensaje original
+   - Agregar contexto adicional si es útil
+   - Mencionar requisitos específicos mencionados
+   - Si hay números, fechas u horas específicas, incluirlos
+   - Mínimo 2-3 oraciones si hay información suficiente
+
+3. **SOLICITA**: 
+   - Usar el nombre del remitente: "${sender || 'Desconocido'}"
+
+4. **RESPONSABLE**:
+   - Si se menciona a alguien que debe hacer la tarea, incluirlo
+   - Si no se menciona, dejar vacío
+
+5. **FECHA LÍMITE**:
+   - Calcular la fecha exacta en formato YYYY-MM-DD
+   - "hoy" = ${todayStr}
+   - "mañana" = ${tomorrow.toISOString().split('T')[0]}
+   - "esta semana" = ${nextWeek.toISOString().split('T')[0]}
+   - Para días específicos (lunes, martes, etc.), calcular el próximo
+   - Si no hay fecha clara, usar null
+
+6. **PRIORIDAD** (Alta/Media/Baja):
+   - ALTA: palabras como "urgente", "ASAP", "inmediato", "crítico", "hoy", "ahora"
+   - MEDIA: tareas normales con fecha específica
+   - BAJA: sugerencias, ideas, "cuando puedas"
+
+7. **TIPO DE TAREA**:
+   - "Solicitud de información": piden datos, reportes, información
+   - "Solicitud de cambio": modificaciones, actualizaciones, configuraciones
+   - "Bug/Error": problemas, errores, fallas, no funciona
+   - "Mejora": optimizar, mejorar, nueva funcionalidad
+   - "Otro": si no encaja en las anteriores
+
+Responde ÚNICAMENTE con un JSON válido (sin markdown, sin texto adicional):
 {
-  "title": "título corto y claro de la tarea (máx 80 caracteres)",
-  "description": "descripción detallada si hay más contexto, o vacío",
-  "solicita": "nombre de quien solicita (usar el remitente si aplica)",
-  "responsable": "nombre del responsable si se menciona, o vacío",
-  "dueDate": "fecha en formato YYYY-MM-DD si se menciona (ej: 'para el viernes' = próximo viernes), o null",
-  "priority": "Alta, Media o Baja según urgencia del mensaje",
-  "tipoTarea": "uno de: Solicitud de información, Solicitud de cambio, Bug/Error, Mejora, Otro"
-}
-
-Reglas:
-- Si dice "urgente", "ASAP", "para hoy" → prioridad Alta
-- Si menciona fechas relativas como "mañana", "próximo lunes", calcula la fecha real
-- El título debe ser accionable (empezar con verbo si es posible)
-- Si no hay información clara para un campo, usa null o string vacío`;
+  "title": "título descriptivo y accionable",
+  "description": "descripción completa con todos los detalles relevantes",
+  "solicita": "nombre del solicitante",
+  "responsable": "nombre o vacío",
+  "dueDate": "YYYY-MM-DD o null",
+  "priority": "Alta/Media/Baja",
+  "tipoTarea": "tipo de la lista anterior"
+}`;
 
   try {
     console.log('🤖 Llamando a OpenAI con key:', apiKey.substring(0, 25) + '...');
@@ -140,12 +190,12 @@ Reglas:
         messages: [
           { 
             role: 'system', 
-            content: 'Eres un asistente que extrae información de mensajes para crear tareas. Responde SOLO con JSON válido, sin markdown ni explicaciones.'
+            content: 'Eres un asistente experto en gestión de proyectos y tareas. Tu trabajo es analizar mensajes de chat y extraer información estructurada para crear tareas en un sistema de gestión. Siempre respondes ÚNICAMENTE con JSON válido, sin markdown, sin explicaciones adicionales. Eres detallado y preciso en las descripciones.'
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.3,
-        max_tokens: 500
+        temperature: 0.2,
+        max_tokens: 800
       })
     });
 
