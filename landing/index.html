@@ -559,38 +559,6 @@
         }
         fetchGitHubStars();
 
-        // Rotating text animation
-        const rotatingTexts = [
-            'Notion',
-            'Excel',
-            'Google Sheets',
-            'Trello',
-            'Asana',
-            'Todoist',
-            'ClickUp',
-            'Monday',
-            'Airtable',
-            'Jira'
-        ];
-
-        let currentIndex = 0;
-        const rotatingElement = document.getElementById('rotating-text');
-
-        function rotateText() {
-            if (!rotatingElement) return;
-
-            rotatingElement.style.opacity = '0';
-            rotatingElement.style.transform = 'translateY(-10px)';
-
-            setTimeout(() => {
-                currentIndex = (currentIndex + 1) % rotatingTexts.length;
-                rotatingElement.textContent = rotatingTexts[currentIndex];
-                rotatingElement.style.opacity = '1';
-                rotatingElement.style.transform = 'translateY(0)';
-            }, 300);
-        }
-
-        setInterval(rotateText, 2500);
     </script>
 </body>
 
