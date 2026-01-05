@@ -91,9 +91,14 @@ async function handleMessage(message) {
 async function aiAutocomplete(messageText, sender) {
   const config = await chrome.storage.local.get(['openaiKey']);
   
+  console.log('🤖 OpenAI Key encontrada:', config.openaiKey ? `${config.openaiKey.substring(0, 20)}...` : 'NO');
+  
   if (!config.openaiKey) {
     throw new Error('OpenAI no configurado. Ve al popup de la extensión para agregar tu API Key.');
   }
+  
+  // Limpiar la key por si tiene espacios
+  const apiKey = config.openaiKey.trim();
 
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
@@ -122,10 +127,12 @@ Reglas:
 - Si no hay información clara para un campo, usa null o string vacío`;
 
   try {
+    console.log('🤖 Llamando a OpenAI con key:', apiKey.substring(0, 25) + '...');
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.openaiKey}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -144,6 +151,11 @@ Reglas:
 
     if (!response.ok) {
       const error = await response.json();
+      console.error('❌ OpenAI Error Response:', error);
+      
+      if (response.status === 401) {
+        throw new Error('API Key de OpenAI inválida o expirada. Verifica tu key en platform.openai.com');
+      }
       throw new Error(error.error?.message || `Error ${response.status}`);
     }
 
