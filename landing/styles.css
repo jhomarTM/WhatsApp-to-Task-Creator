@@ -332,6 +332,19 @@ a {
     background-clip: text;
 }
 
+.notion-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    vertical-align: middle;
+}
+
+.notion-logo-inline {
+    display: inline-block;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.3));
+}
+
 .hero-subtitle {
     font-size: 1.125rem;
     color: var(--text-secondary);
