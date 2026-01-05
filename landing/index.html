@@ -224,42 +224,90 @@
         </div>
     </section>
 
-    <!-- Problem Section -->
-    <section class="problem-section">
+    <!-- Before/After Comparison Section -->
+    <section class="comparison-section">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge">El problema</span>
-                <h2>¿Cuántas tareas se pierden en tus chats?</h2>
+                <span class="section-badge">El cambio</span>
+                <h2>De solicitudes perdidas a tareas organizadas</h2>
             </div>
 
-            <div class="problem-grid">
-                <div class="problem-card">
-                    <div class="problem-icon">
-                        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-                        </svg>
+            <div class="comparison-container">
+                <!-- ANTES -->
+                <div class="comparison-side before">
+                    <div class="comparison-header">
+                        <span class="comparison-label before-label">ANTES</span>
+                        <span class="comparison-subtitle">Caos en los chats</span>
                     </div>
-                    <h3>Solicitudes que se pierden</h3>
-                    <p>Te piden algo por WhatsApp y 3 horas después se perdió entre 50 mensajes nuevos.</p>
+                    <div class="comparison-content">
+                        <div class="chat-chaos">
+                            <div class="chaos-message">
+                                <span class="msg-sender">Carlos</span>
+                                <span class="msg-text">Necesito el reporte urgente</span>
+                                <span class="msg-status lost">Olvidado</span>
+                            </div>
+                            <div class="chaos-message">
+                                <span class="msg-sender">Ana</span>
+                                <span class="msg-text">Revisar contrato del cliente</span>
+                                <span class="msg-status lost">Perdido</span>
+                            </div>
+                            <div class="chaos-message">
+                                <span class="msg-sender">Jefe</span>
+                                <span class="msg-text">Preparar presentacion Q4</span>
+                                <span class="msg-status lost">Sin seguimiento</span>
+                            </div>
+                        </div>
+                        <div class="chaos-indicator">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                            </svg>
+                            <span>3 tareas sin registrar</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="problem-card">
-                    <div class="problem-icon">
-                        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-                            <path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/>
-                        </svg>
-                    </div>
-                    <h3>Copiar y pegar manual</h3>
-                    <p>Abres WhatsApp, copias, abres Notion, pegas, formateas... y pierdes el contexto.</p>
+
+                <!-- Flecha central -->
+                <div class="comparison-arrow">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                    </svg>
                 </div>
-                <div class="problem-card">
-                    <div class="problem-icon">
-                        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                        </svg>
+
+                <!-- DESPUÉS -->
+                <div class="comparison-side after">
+                    <div class="comparison-header">
+                        <span class="comparison-label after-label">DESPUES</span>
+                        <span class="comparison-subtitle">Todo en Notion</span>
                     </div>
-                    <h3>Interrumpe tu flujo</h3>
-                    <p>Cambiar entre apps rompe tu concentración. Cada switch mental cuesta minutos de productividad.
-                    </p>
+                    <div class="comparison-content">
+                        <div class="notion-organized">
+                            <div class="notion-task">
+                                <span class="task-check done">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                </span>
+                                <span class="task-title">Reporte urgente</span>
+                                <span class="task-tag high">Alta</span>
+                            </div>
+                            <div class="notion-task">
+                                <span class="task-check pending"></span>
+                                <span class="task-title">Revisar contrato</span>
+                                <span class="task-tag medium">Media</span>
+                            </div>
+                            <div class="notion-task">
+                                <span class="task-check pending"></span>
+                                <span class="task-title">Presentacion Q4</span>
+                                <span class="task-tag high">Alta</span>
+                            </div>
+                        </div>
+                        <div class="success-indicator">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            <span>3 tareas organizadas</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
